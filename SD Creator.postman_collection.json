@@ -1,0 +1,95 @@
+{
+	"info": {
+		"_postman_id": "19d2a701-9729-4cbc-91cf-6e0e71b5878d",
+		"name": "SD Creator",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Add Self Description to GXFS Federated Catalogue",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "<place_JSON_claims_here>",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{sd_creator_protocol}}://{{sd_creator_address}}/federated-catalogue/self-descriptions",
+					"protocol": "{{sd_creator_protocol}}",
+					"host": [
+						"{{sd_creator_address}}"
+					],
+					"path": [
+						"federated-catalogue",
+						"self-descriptions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Self Description",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "<place_claims_here><place_JSON_claims_here>",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{sd_creator_protocol}}://{{sd_creator_address}}/self-description",
+					"protocol": "{{sd_creator_protocol}}",
+					"host": [
+						"{{sd_creator_address}}"
+					],
+					"path": [
+						"self-description"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "sd_creator_address",
+			"value": "127.0.0.1:8080"
+		},
+		{
+			"key": "sd_creator_protocol",
+			"value": "http",
+			"type": "default"
+		}
+	]
+}

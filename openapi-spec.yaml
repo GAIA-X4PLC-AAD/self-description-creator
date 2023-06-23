@@ -1,0 +1,95 @@
+openapi: 3.0.0
+info:
+  title: Self Description Creator API
+  version: 0.1.0
+servers:
+  - url: https://sd-creator.gxfs.gx4fm.org
+    description: Demonstration server - maintained by msg.
+paths:
+  /federated-catalogue/self-descriptions:
+    post:
+      summary: Creates a sample Self Description based on provided Claims and adds it to configured GXFS Federated Catalogue instance.
+      description: Issuer and Private Key used for creating the Proof are configured on server side.
+      requestBody:
+        description: JSON-LD Claims to be placed inside the Verifiable Credential of the resulting Self Description.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              {
+                "id": "https://gaia-x.eu/.well-known/service1.json",
+                "type": "gx:ServiceOffering",
+                "gx:providedBy": {
+                  "id": "https://gaia-x.eu/.well-known/participant.json"
+                },
+                "gx:policy": "",
+                "gx:termsAndConditions": {
+                  "gx:URL": "http://termsandconds.com",
+                  "gx:hash": "d8402a23de560f5ab34b22d1a142feb9e13b3143"
+                },
+                "gx:dataAccountExport": {
+                  "gx:requestType": "API",
+                  "gx:accessType": "digital",
+                  "gx:formatType": "application/json"
+                }
+              }
+      responses:
+        '201': # status code
+          description: In case the Self Description has been created and successfully added to the configured GXFS Federated Catalogue instance.
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                {"status": "success"}
+        '500': # status code
+          description: In case an error occurred.
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /self-description:
+    post:
+      summary: Creates a sample Self Description based on provided Claims.
+      description: Issuer and Private Key used to create the Proof are configured on the server side.
+      requestBody:
+        description: JSON-LD Claims to be placed inside the Verifiable Credential of the resulting Self Description.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              {
+                "id": "https://gaia-x.eu/.well-known/service1.json",
+                "type": "gx:ServiceOffering",
+                "gx:providedBy": {
+                  "id": "https://gaia-x.eu/.well-known/participant.json"
+                },
+                "gx:policy": "",
+                "gx:termsAndConditions": {
+                  "gx:URL": "http://termsandconds.com",
+                  "gx:hash": "d8402a23de560f5ab34b22d1a142feb9e13b3143"
+                },
+                "gx:dataAccountExport": {
+                  "gx:requestType": "API",
+                  "gx:accessType": "digital",
+                  "gx:formatType": "application/json"
+                }
+              }
+      responses:
+        '200': # status code
+          description: The created Self Description.
+          content:
+            application/json:
+              schema:
+                type: object
+        '500': # status code
+          description: In case an error occurred.
+          content:
+            application/json:
+              schema:
+                type: object
