@@ -133,5 +133,4 @@ The code was initially developed by msg systems AG.
 Feel free to contribute to the code and open a Pull Request.
 
 # License
-
-See [License](LICENSE).
+MIT License - see [License](LICENSE).
