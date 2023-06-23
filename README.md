@@ -5,6 +5,8 @@ Descriptions, they can also be automatically sent to a configured GXFS Federated
 
 The tool provides an API based on Flask.
 
+_Note: The code is still under development._
+
 # Getting Started
 
 ## Development
