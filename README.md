@@ -1,11 +1,35 @@
 # Introduction
 
-This repository contains a Python Tool that can be used to create Gaia-X Self Descriptions. In addition to just creating Self
-Descriptions, they can also be automatically sent to a configured GXFS Federated Catalogue instance.
+This repository contains a Python Tool that can be used to automate the process of creating _Gaia-X Self Descriptions_ based on 
+Claims provided as an input. In addition to just creating Self Descriptions, they can also be automatically sent to a configured 
+_GXFS Federated Catalogue_ instance.
 
-The tool provides an API based on Flask.
+There are different ways to provide the input and retrieve the created Self Description. The tool allows interaction via a 
+simple API, but is also able to process Claims automatically that are read from filesystem. More information on this can be 
+found in the section [Operating modes](#operating-modes).
 
 _Note: The code is still under development._
+
+## Gaia-X compliance
+
+The current version of the Gaia-X Architecture
+Document ([22.10 Release](https://docs.gaia-x.eu/technical-committee/architecture-document/22.10/)) defines that a Self
+Description qualified as Gaia-X compliant must be submitted to a Gaia-X Compliance Service instance and the resulting Compliance
+Credential must be inserted into the Self Description. This seems to only apply to Self Descriptions where the types contained
+in the `credentialSubject` of the provided Verifiable Credentials are defined by Gaia-X Trust Framework (see the following 
+[Issue](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/issues/50)). Self Descriptions that contain a 
+Federation-specific type _do not_ seem to require a corresponding Compliance Credential.
+
+Self Descriptions created by this tool currently _cannot_ become Gaia-X compliant, because a submit of the Self Description 
+to a 
+Compliance Service instance has not been implemented so far.
+Regardless of that, the Self Descriptions are accepted by the current implementation of the GXFS Federated Catalogue 
+independent of
+whether they contain a Compliance Credential or not.
+
+## GXFS Federated Catalogue support
+
+The tool has been tested with the current implementation of GXFS Federated Catalogue in Version 1.1.1.
 
 # Getting Started
 
@@ -71,9 +95,9 @@ container.
 
 The application can run in two operating modes which can be set via the environment variable `OPERATING_MODE`.
 
-* `API`: In this mode, the application provides an API to create Self Descriptions and to write the created SDs to the
+* `API`: In this mode, the application provides a HTTP API to create Self Descriptions and to write the created SDs to the
   configured GXFS Federated Catalogue.
-* `HYBRID`: In this mode, the application provides an API but also starts a background task that monitors a specific directory
+* `HYBRID`: In this mode, the application provides a HTTP API but also starts a background task that monitors a specific directory
   for JSON files containing Claims and creates SDs for them which are automatically send to the configured GXFS Federated
   Catalogue. Please see the environment variables starting with `CLAIM_FILES_`.
 
@@ -135,4 +159,5 @@ The code was initially developed by msg systems AG.
 Feel free to contribute to the code and open a Pull Request.
 
 # License
+
 MIT License - see [License](LICENSE).
