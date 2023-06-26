@@ -9,9 +9,7 @@ ENV FLASK_APP=${ARG_FLASK_APP}\
     FLASK_RUN_PORT=${ARG_FLASK_RUN_PORT}\
     APP_HOME=${ARG_APP_HOME}
 
-LABEL maintainer="msg"
-LABEL project="GX4FM PLC-AAD"
-LABEL description="Tool that creates Gaia-X Self Descriptions and is able to add them to a GXFS Federated Catalogue."
+LABEL description="A tool that creates Gaia-X Self Descriptions and is able to automatically send them to a GXFS Federated Catalogue instance."
 
 # Ensure application will be run as non-root user for safety reasons
 RUN echo "Adding run user to system" \
