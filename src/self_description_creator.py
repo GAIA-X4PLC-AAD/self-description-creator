@@ -257,8 +257,10 @@ def add_federated_catalogue_auth_header(header: dict):
             not FEDERATED_CATALOGUE_USER_NAME or \
             not FEDERATED_CATALOGUE_USER_PASSWORD or \
             not KEYCLOAK_CLIENT_SECRET:
-        app.logger.warning("Request to Federated Catalogue cannot be performed due to missing "
-                           "environment variables")
+        err_msg = "Request to Federated Catalogue cannot be performed due to missing environment variables"
+        app.logger.warning(err_msg)
+        raise Exception(err_msg)
+
     token = keycloak_client.get_keycloak_token(server_url=KEYCLOAK_SERVER_URL, user=FEDERATED_CATALOGUE_USER_NAME,
                                                password=FEDERATED_CATALOGUE_USER_PASSWORD,
                                                client_secret=KEYCLOAK_CLIENT_SECRET)
