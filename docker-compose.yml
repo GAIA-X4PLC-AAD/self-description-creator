@@ -4,13 +4,17 @@ services:
   self-description-creator:
     build: ./
     ports:
-      - "80:8080"
+      - "8080:8080"
     environment:
-      OPERATING_MODE: "API"
+      CREDENTIAL_ISSUER: ""
+      CREDENTIAL_ISSUER_PRIVATE_KEY_PEM_PATH: "/mnt/cert/<pem_file_name>"
+#      KEYCLOAK_SERVER_URL: ""
+#      KEYCLOAK_CLIENT_SECRET: ""
+#      FEDERATED_CATALOGUE_USER_NAME: ""
+#      FEDERATED_CATALOGUE_USER_PASSWORD: ""
+#      FEDERATED_CATALOGUE_URL: ""
 #      CLAIM_FILES_DIR: "/mnt/data"
-#      - KEYCLOAK_USER
-#      - KEYCLOAK_PASSWORD
-#      - KEYCLOAK_CLIENT_SECRET
-#    volumes:
-#      - ./data/:/mnt/data/
+    volumes:
+      - <local_folder_cert_file>/:/mnt/cert/
+#      - <local_folder_claims_files>:/mnt/data/
 

@@ -16,13 +16,13 @@ from pyld import jsonld
 import keycloak_client
 
 # -- Environment variables --
-KEYCLOAK_SERVER_URL = os.environ.get("KEYCLOAK_SERVER_URL")
-FEDERATED_CATALOGUE_USER_NAME = os.environ["FEDERATED_CATALOGUE_USER_NAME"]
-FEDERATED_CATALOGUE_USER_PASSWORD = os.environ["FEDERATED_CATALOGUE_USER_PASSWORD"]
-KEYCLOAK_CLIENT_SECRET = os.environ["KEYCLOAK_CLIENT_SECRET"]
-FEDERATED_CATALOGUE_URL = os.environ.get("FEDERATED_CATALOGUE_URL")
+KEYCLOAK_SERVER_URL = os.environ.get("KEYCLOAK_SERVER_URL", default="")
+FEDERATED_CATALOGUE_USER_NAME = os.environ.get("FEDERATED_CATALOGUE_USER_NAME", default="")
+FEDERATED_CATALOGUE_USER_PASSWORD = os.environ.get("FEDERATED_CATALOGUE_USER_PASSWORD", default="")
+KEYCLOAK_CLIENT_SECRET = os.environ.get("KEYCLOAK_CLIENT_SECRET", default="")
+FEDERATED_CATALOGUE_URL = os.environ.get("FEDERATED_CATALOGUE_URL", default="")
 CREDENTIAL_ISSUER = os.environ.get("CREDENTIAL_ISSUER")
-CREDENTIAL_ISSUER_PRIV_KEY_PEM_PATH = os.environ.get("CREDENTIAL_ISSUER_PRIVATE_KEY_PEM_PATH")
+CREDENTIAL_ISSUER_PRIVATE_KEY_PEM_PATH = os.environ.get("CREDENTIAL_ISSUER_PRIVATE_KEY_PEM_PATH")
 CLAIM_FILES_DIR = os.environ.get("CLAIM_FILES_DIR", default=os.path.join(os.path.dirname(__file__), "..", "data"))
 CLAIM_FILES_POLL_INTERVAL_SEC = os.environ.get("CLAIM_FILES_POLL_INTERVAL_SEC", default=2.0)
 CLAIM_FILES_CLEANUP_MAX_FILE_AGE_DAYS = os.environ.get("CLAIM_FILES_CLEANUP_MAX_FILE_AGE_DAYS", default=1)
@@ -39,7 +39,7 @@ def read_signature_private_key():
     Create a JWK that can be used to sign VCs and VPs.
     """
     # We're using an example private key from the Gaia-X Wizard which is a RSA2048 key
-    with open(CREDENTIAL_ISSUER_PRIV_KEY_PEM_PATH, "rb") as key_file:
+    with open(CREDENTIAL_ISSUER_PRIVATE_KEY_PEM_PATH, "rb") as key_file:
         pem_data = key_file.read()
 
     global SIGNATURE_JWK
@@ -253,6 +253,12 @@ def add_federated_catalogue_auth_header(header: dict):
     Add auth header for authorization against GXFS Federated Catalogue.
     :param header: Set of HTTP headers the auth header is supposed to be added to
     """
+    if not KEYCLOAK_SERVER_URL or \
+            not FEDERATED_CATALOGUE_USER_NAME or \
+            not FEDERATED_CATALOGUE_USER_PASSWORD or \
+            not KEYCLOAK_CLIENT_SECRET:
+        app.logger.warning("Request to Federated Catalogue cannot be performed due to missing "
+                           "environment variables")
     token = keycloak_client.get_keycloak_token(server_url=KEYCLOAK_SERVER_URL, user=FEDERATED_CATALOGUE_USER_NAME,
                                                password=FEDERATED_CATALOGUE_USER_PASSWORD,
                                                client_secret=KEYCLOAK_CLIENT_SECRET)

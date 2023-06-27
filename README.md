@@ -1,11 +1,11 @@
 # Introduction
 
-This repository contains a Python Tool that can be used to automate the process of creating _Gaia-X Self Descriptions_ based on 
-Claims provided as an input. In addition to just creating Self Descriptions, they can also be automatically sent to a configured 
+This repository contains a Python Tool that can be used to automate the process of creating _Gaia-X Self Descriptions_ based on
+Claims provided as an input. In addition to just creating Self Descriptions, they can also be automatically sent to a configured
 _GXFS Federated Catalogue_ instance.
 
-There are different ways to provide the input and retrieve the created Self Description. The tool allows interaction via a 
-simple API, but is also able to process Claims automatically that are read from filesystem. More information on this can be 
+There are different ways to provide the input and retrieve the created Self Description. The tool allows interaction via a
+simple API, but is also able to process Claims automatically that are read from filesystem. More information on this can be
 found in the section [Operating modes](#operating-modes).
 
 _Note: The code is still under development._
@@ -16,14 +16,14 @@ The current version of the Gaia-X Architecture
 Document ([22.10 Release](https://docs.gaia-x.eu/technical-committee/architecture-document/22.10/)) defines that a Self
 Description qualified as Gaia-X compliant must be submitted to a Gaia-X Compliance Service instance and the resulting Compliance
 Credential must be inserted into the Self Description. This seems to only apply to Self Descriptions where the types contained
-in the `credentialSubject` of the provided Verifiable Credentials are defined by Gaia-X Trust Framework (see the following 
-[Issue](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/issues/50)). Self Descriptions that contain a 
+in the `credentialSubject` of the provided Verifiable Credentials are defined by Gaia-X Trust Framework (see the following
+[Issue](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/issues/50)). Self Descriptions that contain a
 Federation-specific type _do not_ seem to require a corresponding Compliance Credential.
 
-Self Descriptions created by this tool currently _cannot_ become Gaia-X compliant, because a submit of the Self Description 
-to a 
+Self Descriptions created by this tool currently _cannot_ become Gaia-X compliant, because a submit of the Self Description
+to a
 Compliance Service instance has not been implemented so far.
-Regardless of that, the Self Descriptions are accepted by the current implementation of the GXFS Federated Catalogue 
+Regardless of that, the Self Descriptions are accepted by the current implementation of the GXFS Federated Catalogue
 independent of
 whether they contain a Compliance Credential or not.
 
@@ -69,27 +69,27 @@ easiest way to get the application up and running is by using docker-compose:
 ```console
 $ docker-compose up
 ```
-
-Please consider the following description of the exposed environment variables to adapt the application behavior.
+Before you start using the docker-compose file, please consider the following description of the exposed environment 
+variables that describes the mandatory and optional variables that must be set to adapt the application behavior.
 
 ### Environment variables
 
 The following environment variables can be set to adapt the behavior of the application e.g. when running inside a
 container.
 
-| Name                                  | Type   | Optional | Default | Description                                                                                                          |
-|---------------------------------------|--------|----------|---------|----------------------------------------------------------------------------------------------------------------------| 
-| CREDENTIAL_ISSUER                     | String |          |         | The issuer set inside the Self Description. Usually a W3C DID                                                        |
-| CREDENTIAL_ISSUER_PRIV_KEY_PEM_PATH   | String |          |         | Path to the private key (PEM format) of the Issuer certificate that is used to create a Proof for a Self Description |
-| CLAIM_FILES_DIR                       | String | x        | _data_  | A folder related to the execution path of the script where to read Claim files from                                  |
-| CLAIM_FILES_POLL_INTERVAL_SEC         | Float  | x        | _2.0_   | The poll interval used to check the `CLAIM_FILES_DIR` for new files                                                  | 
-| CLAIM_FILES_CLEANUP_MAX_FILE_AGE_DAYS | Int    | x        | _1_     | The maximum age of processed files in the folder `CLAIM_FILES_DIR` to decide whether they should be cleaned up       |
-| KEYCLOAK_SERVER_URL                   | String |          |         | The URL of the Keycloak Server which is used to retrieve JTWs to access the GXFS Federated Catalogue                 |
-| FEDERATED_CATALOGUE_USER_NAME         | String |          |         | The Keycloak user which has appropriate permissions to add Self Desription to the Federated Catalogue                |
-| FEDERATED_CATALOGUE_USER_PASSWORD     | String |          |         | Password for the Keycloak user                                                                                       |
-| KEYCLOAK_CLIENT_SECRET                | String |          |         | The secret for the client `federated_catalogue`                                                                      |
-| FEDERATED_CATALOGUE_URL               | String |          |         | The URL of the GXFS Federated Catalogue                                                                              |
-| OPERATING_MODE                        | String | x        | _API_   | Describes the operating mode of the application. Can be either "API" or "HYBRID"                                     |
+| Name                                   | Type   | Optional | Default | Description                                                                                                          |
+|----------------------------------------|--------|----------|---------|----------------------------------------------------------------------------------------------------------------------| 
+| CREDENTIAL_ISSUER                      | String |          |         | The issuer set inside the Self Description. It will not be checked, whether the issuer is valid                      |
+| CREDENTIAL_ISSUER_PRIVATE_KEY_PEM_PATH | String |          |         | Path to the private key (PEM format) of the Issuer certificate that is used to create a Proof for a Self Description |
+| CLAIM_FILES_DIR                        | String | x        | _data_  | A folder related to the execution path of the script where to read Claim files from                                  |
+| CLAIM_FILES_POLL_INTERVAL_SEC          | Float  | x        | _2.0_   | The poll interval used to check the `CLAIM_FILES_DIR` for new files                                                  | 
+| CLAIM_FILES_CLEANUP_MAX_FILE_AGE_DAYS  | Int    | x        | _1_     | The maximum age of processed files in the folder `CLAIM_FILES_DIR` to decide whether they should be cleaned up       |
+| KEYCLOAK_SERVER_URL                    | String | x        | ""      | The URL of the Keycloak Server which is used to retrieve JTWs to access the GXFS Federated Catalogue                 |
+| KEYCLOAK_CLIENT_SECRET                 | String | x        | ""      | The secret for the client `federated_catalogue`                                                                      |
+| FEDERATED_CATALOGUE_USER_NAME          | String | x        | ""      | The Keycloak user which has appropriate permissions to add Self Desription to the Federated Catalogue                |
+| FEDERATED_CATALOGUE_USER_PASSWORD      | String | x        | ""      | Password for the Keycloak user                                                                                       |
+| FEDERATED_CATALOGUE_URL                | String | x        | ""      | The URL of the GXFS Federated Catalogue                                                                              |
+| OPERATING_MODE                         | String | x        | _API_   | Describes the operating mode of the application. Can be either "API" or "HYBRID"                                     |
 
 ### Operating modes
 
@@ -100,6 +100,14 @@ The application can run in two operating modes which can be set via the environm
 * `HYBRID`: In this mode, the application provides a HTTP API but also starts a background task that monitors a specific directory
   for JSON files containing Claims and creates SDs for them which are automatically send to the configured GXFS Federated
   Catalogue. Please see the environment variables starting with `CLAIM_FILES_`.
+
+### Interaction with GXFS Federated Catalogue
+
+To enable interaction with a GXFS Federated Catalogue instance, certain environment variables having the following prefixes
+must be configured:
+
+* `KEYCLOAK_`
+* `FEDERATED_CATALOGUE_`
 
 ## Deployment
 
