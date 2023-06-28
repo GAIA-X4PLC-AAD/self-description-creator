@@ -17,7 +17,7 @@ container:
         port: 8080
         protocol: TCP
     env:
-      CLAIM_FILES_DIR: "/mnt/data/claim_files" # See reference to `volumeMounts.mountPath` below
+      CLAIM_FILES_DIR: "/mnt/data" # See reference to `volumeMounts.mountPath` below
       CLAIM_FILES_CLEANUP_MAX_FILE_AGE_DAYS: 5
     probes:
       readiness:
@@ -134,4 +134,4 @@ volume:
 
 volumeMounts:
   name: data
-  mountPath: /mnt/data/claim_files
+  mountPath: /mnt/data

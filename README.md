@@ -69,7 +69,8 @@ easiest way to get the application up and running is by using docker-compose:
 ```console
 $ docker-compose up
 ```
-Before you start using the docker-compose file, please consider the following description of the exposed environment 
+
+Before you start using the docker-compose file, please consider the following description of the exposed environment
 variables that describes the mandatory and optional variables that must be set to adapt the application behavior.
 
 ### Environment variables
@@ -126,21 +127,21 @@ $ helm upgrade --install self-description-creator helm/self-description-creator
 The following table lists the _most relevant_ configurable parameters of the Helm Chart and their default values (for more
 information see `values.yaml`).
 
-| Parameter                            | Description                                                                                                                                   | Optional | Default                 |
-|--------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|----------|-------------------------|
-| `image.repository`                   | The application image repository                                                                                                              |          | ""                      |
-| `image.tag`                          | Overrides the Keycloak image tag whose default is the chart version                                                                           |          | ""                      |
-| `volume.storageClassName`            | The k8s Storage Class to be used when setting the application `OPERATING_MODE` to `HYBRID`. See detailed information in the following section | x        | `""`                    |
-| `volumeMounts.mountPath`             | Optionally override the fully qualified name                                                                                                  | x        | `/mnt/data/claim_files` |
-| `container.main.env`                 | Provide environment variables to the Pod. Example: `container.main.env.KEYCLOAK_SERVER_URL=<value>`                                           | x        | See `values.yaml`.      |
-| `ingress.className`                  | The className of the Ingress                                                                                                                  | x        | nginx                   |
-| `ingress.enabled`                    | If `true`, an Ingress is created. In this case, the following ingress parameters should be provided as well (according to your environment)   | x        | true                    |
-| `ingress.hosts[0].host`              | Host for the Ingress rule	                                                                                                                    | x        | chart-example.local     |
-| `ingress.hosts[0].paths[0].path`     | Path for the Ingress rule                                                                                                                     | x        | /                       |
-| `ingress.hosts[0].paths[0].pathType` | Path Type for the Ingress rule`                                                                                                               | x        | Prefix                  |
-| `federatedCatalogue.user.name`       | Matches the environment variable listed above. Injects the value into the Pod via a Secret                                                    |          | ""                      |
-| `federatedCatalogue.user.password`   | Matches the environment variable listed above. Injects the value into the Pod via a Secret                                                    |          | ""                      |
-| `keycloak.realm.client_secret`       | Matches the environment variable listed above. Injects the value into the Pod via a Secret                                                    |          | ""                      |
+| Parameter                            | Description                                                                                                                                   | Optional | Default             |
+|--------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|----------|---------------------|
+| `image.repository`                   | The application image repository                                                                                                              |          | ""                  |
+| `image.tag`                          | Overrides the Keycloak image tag whose default is the chart version                                                                           |          | ""                  |
+| `volume.storageClassName`            | The k8s Storage Class to be used when setting the application `OPERATING_MODE` to `HYBRID`. See detailed information in the following section | x        | `""`                |
+| `volumeMounts.mountPath`             | Optionally override the fully qualified name                                                                                                  | x        | `/mnt/data`         |
+| `container.main.env`                 | Provide environment variables to the Pod. Example: `container.main.env.KEYCLOAK_SERVER_URL=<value>`                                           | x        | See `values.yaml`.  |
+| `ingress.className`                  | The className of the Ingress                                                                                                                  | x        | nginx               |
+| `ingress.enabled`                    | If `true`, an Ingress is created. In this case, the following ingress parameters should be provided as well (according to your environment)   | x        | true                |
+| `ingress.hosts[0].host`              | Host for the Ingress rule	                                                                                                                    | x        | chart-example.local |
+| `ingress.hosts[0].paths[0].path`     | Path for the Ingress rule                                                                                                                     | x        | /                   |
+| `ingress.hosts[0].paths[0].pathType` | Path Type for the Ingress rule`                                                                                                               | x        | Prefix              |
+| `federatedCatalogue.user.name`       | Matches the environment variable listed above. Injects the value into the Pod via a Secret                                                    |          | ""                  |
+| `federatedCatalogue.user.password`   | Matches the environment variable listed above. Injects the value into the Pod via a Secret                                                    |          | ""                  |
+| `keycloak.realm.client_secret`       | Matches the environment variable listed above. Injects the value into the Pod via a Secret                                                    |          | ""                  |
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm upgrade`.
 
