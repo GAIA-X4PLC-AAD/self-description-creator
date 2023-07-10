@@ -19,6 +19,7 @@ container:
     env:
       CLAIM_FILES_DIR: "/mnt/data" # See reference to `volumeMounts.mountPath` below
       CLAIM_FILES_CLEANUP_MAX_FILE_AGE_DAYS: 5
+      CREDENTIAL_ISSUER_PRIVATE_KEY_PEM_PATH: "/etc/secret-volume/credential_issuer_private_key_pem"
     probes:
       readiness:
         path: /health
@@ -125,6 +126,8 @@ federatedCatalogue: # Keycloak User to access the GXFS Federated Catalogue
 keycloak:
   realm:
     client_secret: "" # Client secret to access Keycloak
+credentialIssuer:
+  privateKeyPem: ""
 
 volume:
   name: data

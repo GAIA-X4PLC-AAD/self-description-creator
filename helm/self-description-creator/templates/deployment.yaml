@@ -62,17 +62,22 @@ spec:
             {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          {{- if .Values.volume.storageClassName }}
           volumeMounts:
+            - name: secret-volume
+              mountPath: /etc/secret-volume
+            {{- if .Values.volume.storageClassName }}
             - mountPath: {{ .Values.volumeMounts.mountPath }}
               name: {{ .Values.volumeMounts.name }}
-          {{- end }}
-      {{- if .Values.volume.storageClassName }}
+            {{- end }}
       volumes:
+        - name: secret-volume
+          secret:
+            secretName: {{ include "generic-chart.fullname" . }}-secret
+        {{- if .Values.volume.storageClassName }}
         - name: {{ .Values.volume.name }}
           persistentVolumeClaim:
             claimName: {{ .Values.volume.claimName }}
-      {{- end }}
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
