@@ -62,16 +62,16 @@ spec:
             {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          {{- with .Values.volumeMounts  }}
+          {{- if .Values.volume.storageClassName }}
           volumeMounts:
-            - mountPath: {{ .mountPath }}
-              name: {{ .name }}
+            - mountPath: {{ .Values.volumeMounts.mountPath }}
+              name: {{ .Values.volumeMounts.name }}
           {{- end }}
-      {{- with .Values.volume }}
+      {{- if .Values.volume.storageClassName }}
       volumes:
-        - name: {{ .name }}
+        - name: {{ .Values.volume.name }}
           persistentVolumeClaim:
-            claimName: {{ .claimName }}
+            claimName: {{ .Values.volume.claimName }}
       {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
