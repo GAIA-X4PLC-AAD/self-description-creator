@@ -36,9 +36,8 @@ OPERATING_MODE = os.environ.get("OPERATING_MODE", default="API")  # Can be eithe
 
 def read_signature_private_key():
     """
-    Create a JWK that can be used to sign VCs and VPs.
+    Read a private key from PEM file that is used to create a JWK which is utilized to sign VCs and VPs.
     """
-    # We're using an example private key from the Gaia-X Wizard which is a RSA2048 key
     with open(CREDENTIAL_ISSUER_PRIVATE_KEY_PEM_PATH, "rb") as key_file:
         pem_data = key_file.read()
 

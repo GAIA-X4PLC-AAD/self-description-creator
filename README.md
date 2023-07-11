@@ -2,13 +2,17 @@
 
 This repository contains a Python Tool that can be used to automate the process of creating _Gaia-X Self Descriptions_ based on
 Claims provided as an input. In addition to just creating Self Descriptions, they can also be automatically sent to a configured
-_GXFS Federated Catalogue_ instance.
+_XFSC Federated Catalogue_ instance.
+
+A potential use case is to run the tool decentralized in the infrastructure of a (Service) Provider to enable an automated 
+workflow for creation of Self Descriptions for new Services or Data Assets which are to be offered to other Participants in a 
+Gaia-X Ecosystem.
 
 There are different ways to provide the input and retrieve the created Self Description. The tool allows interaction via a
 simple API, but is also able to process Claims automatically that are read from filesystem. More information on this can be
 found in the section [Operating modes](#operating-modes).
 
-_Note: The code is still under development._
+_Note: The tool is actively used within our project and may therefore be continuously adjusted._
 
 ## Gaia-X compliance
 
@@ -23,13 +27,16 @@ Federation-specific type _do not_ seem to require a corresponding Compliance Cre
 Self Descriptions created by this tool currently _cannot_ become Gaia-X compliant, because a submit of the Self Description
 to a
 Compliance Service instance has not been implemented so far.
-Regardless of that, the Self Descriptions are accepted by the current implementation of the GXFS Federated Catalogue
+Regardless of that, the Self Descriptions are accepted by the current implementation of the XFSC Federated Catalogue
 independent of
 whether they contain a Compliance Credential or not.
 
-## GXFS Federated Catalogue support
+## XFSC Federated Catalogue support
 
-The tool has been tested with the current implementation of GXFS Federated Catalogue in Version 1.1.1.
+The tool has been tested with the current implementation of the
+[XFSC Federated Catalogue](https://gitlab.eclipse.org/eclipse/xfsc/cat/fc-service) in Version 1.1.1. The Keycloak client used
+within the tool to retrieve access tokens required for interaction with the Federated Catalogue API is configured to use
+the same Keycloak Realm as the Catalogue.
 
 # Getting Started
 
@@ -85,11 +92,11 @@ container.
 | CLAIM_FILES_DIR                        | String | x        | _data_  | A folder related to the execution path of the script where to read Claim files from                                  |
 | CLAIM_FILES_POLL_INTERVAL_SEC          | Float  | x        | _2.0_   | The poll interval used to check the `CLAIM_FILES_DIR` for new files                                                  | 
 | CLAIM_FILES_CLEANUP_MAX_FILE_AGE_DAYS  | Int    | x        | _1_     | The maximum age of processed files in the folder `CLAIM_FILES_DIR` to decide whether they should be cleaned up       |
-| KEYCLOAK_SERVER_URL                    | String | x        | ""      | The URL of the Keycloak Server which is used to retrieve JTWs to access the GXFS Federated Catalogue                 |
+| KEYCLOAK_SERVER_URL                    | String | x        | ""      | The URL of the Keycloak Server which is used to retrieve JTWs to access the XFSC Federated Catalogue                 |
 | KEYCLOAK_CLIENT_SECRET                 | String | x        | ""      | The secret for the client `federated_catalogue`                                                                      |
-| FEDERATED_CATALOGUE_USER_NAME          | String | x        | ""      | The Keycloak user which has appropriate permissions to add Self Desription to the Federated Catalogue                |
+| FEDERATED_CATALOGUE_USER_NAME          | String | x        | ""      | The Keycloak user which has appropriate permissions to add Self Description to the Federated Catalogue.              |
 | FEDERATED_CATALOGUE_USER_PASSWORD      | String | x        | ""      | Password for the Keycloak user                                                                                       |
-| FEDERATED_CATALOGUE_URL                | String | x        | ""      | The URL of the GXFS Federated Catalogue                                                                              |
+| FEDERATED_CATALOGUE_URL                | String | x        | ""      | The URL of the XFSC Federated Catalogue                                                                              |
 | OPERATING_MODE                         | String | x        | _API_   | Describes the operating mode of the application. Can be either "API" or "HYBRID"                                     |
 
 ### Operating modes
@@ -97,14 +104,14 @@ container.
 The application can run in two operating modes which can be set via the environment variable `OPERATING_MODE`.
 
 * `API`: In this mode, the application provides a HTTP API to create Self Descriptions and to write the created SDs to the
-  configured GXFS Federated Catalogue.
+  configured XFSC Federated Catalogue.
 * `HYBRID`: In this mode, the application provides a HTTP API but also starts a background task that monitors a specific directory
-  for JSON files containing Claims and creates SDs for them which are automatically send to the configured GXFS Federated
+  for JSON files containing Claims and creates SDs for them which are automatically send to the configured XFSC Federated
   Catalogue. Please see the environment variables starting with `CLAIM_FILES_`.
 
-### Interaction with GXFS Federated Catalogue
+### Interaction with XFSC Federated Catalogue
 
-To enable interaction with a GXFS Federated Catalogue instance, certain environment variables having the following prefixes
+To enable interaction with a XFSC Federated Catalogue instance, certain environment variables having the following prefixes
 must be configured:
 
 * `KEYCLOAK_`
@@ -144,8 +151,8 @@ information see `values.yaml`).
 | `keycloak.realm.client_secret`       | Matches the environment variable listed above. Injects the value into the Pod via a Secret                                                                                                            |          | ""                  |
 | `credentialIssuer.privateKeyPem`     | The private key referenced via the environment variable `CREDENTIAL_ISSUER_PRIVATE_KEY_PEM_PATH`. Key will be injected into the Pod as a Secret file and the path to the file will be set accordingly |          | ""                  |
 
-Specify each parameter using the `--set key=value[,key=value]` argument to `helm upgrade`. The value 
-`credentialIssuer.privateKeyPem` should be read directly from file via `--set-file key=<file_path>` to avoid issues due to 
+Specify each parameter using the `--set key=value[,key=value]` argument to `helm upgrade`. The value
+`credentialIssuer.privateKeyPem` should be read directly from file via `--set-file key=<file_path>` to avoid issues due to
 newlines contained in the file.
 
 _Important: Please consider the mandatory environment variables listed above._
