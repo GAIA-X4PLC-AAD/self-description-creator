@@ -91,6 +91,10 @@ must be configured:
 * `KEYCLOAK_`
 * `FEDERATED_CATALOGUE_`
 
+### Postman Collection
+
+This repository also contains a Postman collection that allows you to test the exposed HTTP endpoints.
+
 ## Development
 
 In the following you'll find instructions to consider in the case you plan to apply changes to the application source code.
@@ -166,10 +170,6 @@ the Claim files. The PVC name to be used to mount the same Volume by other Pods 
 the value `volume.claimName`.
 
 _Important: The Storage Class must support the Volume access mode `ReadWriteMany`._
-
-## Postman Collection
-
-This repository also contains a Postman collection that allows you to test the exposed HTTP endpoints.
 
 # Contribute
 
