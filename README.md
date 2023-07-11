@@ -40,32 +40,6 @@ the same Keycloak Realm as the Catalogue.
 
 # Getting Started
 
-## Development
-
-In the following you'll find instructions to consider in the case you plan to apply changes to the application source code.
-
-### Update requirements
-
-Please make sure to update the used dependencies in the file `requirements.txt` to make the source code portable. This allows
-others developers to create a Python Virtual Environment that contains the required dependencies to execute the code.
-
-To make it easier maintaining the requirements, the tool `pipreqs` can be used.
-
-```console
-$ pip install pipreqs
-$ pipreqs .
-```
-
-### Build and Test
-
-To run the code on your local system, an appropriate Python environment must be configured which contains the required
-dependencies.
-The dependencies can be installed with the following command:
-
-```console
-$ pip install -r requirements.txt
-```
-
 ## Usage
 
 ### Local test via docker-compose
@@ -116,6 +90,32 @@ must be configured:
 
 * `KEYCLOAK_`
 * `FEDERATED_CATALOGUE_`
+
+## Development
+
+In the following you'll find instructions to consider in the case you plan to apply changes to the application source code.
+
+### Update requirements
+
+Please make sure to update the used dependencies in the file `requirements.txt` to make the source code portable. This allows
+others developers to create a Python Virtual Environment that contains the required dependencies to execute the code.
+
+To make it easier maintaining the requirements, the tool `pipreqs` can be used.
+
+```console
+$ pip install pipreqs
+$ pipreqs .
+```
+
+### Build and Test
+
+To run the code on your local system, an appropriate Python environment must be configured which contains the required
+dependencies.
+The dependencies can be installed with the following command:
+
+```console
+$ pip install -r requirements.txt
+```
 
 ## Deployment
 
