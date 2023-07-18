@@ -12,6 +12,8 @@ There are different ways to provide the input and retrieve the created Self Desc
 simple API, but is also able to process Claims automatically that are read from filesystem. More information on this can be
 found in the section [Operating modes](#operating-modes).
 
+![Usage](docs/SD%20Creator%20Usage.png "Use Cases")
+
 _Note: The tool is actively used within our project and may therefore be continuously adjusted._
 
 ## Gaia-X compliance
