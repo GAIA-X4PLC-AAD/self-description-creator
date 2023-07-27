@@ -217,7 +217,9 @@ def send_to_federated_catalogue(self_description: dict):
     if response.ok:
         app.logger.debug("SD successfully sent to Federated Catalogue")
     else:
-        raise Exception("An error occurred while sending Self Description to Federated Catalogue")
+        error_msg = "An error occurred while sending Self Description to Federated Catalogue " \
+                    "[status_code: {}, response_body: {}".format(response.status_code, response.text)
+        raise Exception(error_msg)
 
 
 def move_file(file: os.DirEntry, dest_dir: str):
