@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import shutil
 from logging.config import dictConfig
@@ -50,6 +51,10 @@ def init_app():
     """
     Initialize the core application.
     """
+    class HealthCheckFilter(logging.Filter):
+        def filter(self, record: logging.LogRecord) -> bool:
+            return record.getMessage().find("/health") == -1
+
     dictConfig({
         'version': 1,
         'formatters': {'default': {
@@ -66,6 +71,7 @@ def init_app():
         }
     })
 
+    logging.getLogger("werkzeug").addFilter(HealthCheckFilter())
     app = Flask(__name__)
 
     # Flask-internal logger has been disabled since it logs every request by default which pollutes the log output
