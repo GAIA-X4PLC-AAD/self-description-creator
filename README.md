@@ -65,7 +65,7 @@ container.
 |----------------------------------------|--------|----------|---------|----------------------------------------------------------------------------------------------------------------------| 
 | CREDENTIAL_ISSUER                      | String |          |         | The issuer set inside the Self Description. It will not be checked, whether the issuer is valid                      |
 | CREDENTIAL_ISSUER_PRIVATE_KEY_PEM_PATH | String |          |         | Path to the private key (PEM format) of the Issuer certificate that is used to create a Proof for a Self Description |
-| CLAIM_FILES_DIR                        | String | x        | _data_  | A folder related to the execution path of the script where to read Claim files from                                  |
+| CLAIM_FILES_DIR                        | String | x        | _data_  | Folder where Claim files should be read from                                                                         |
 | CLAIM_FILES_POLL_INTERVAL_SEC          | Float  | x        | _2.0_   | The poll interval used to check the `CLAIM_FILES_DIR` for new files                                                  | 
 | CLAIM_FILES_CLEANUP_MAX_FILE_AGE_DAYS  | Int    | x        | _1_     | The maximum age of processed files in the folder `CLAIM_FILES_DIR` to decide whether they should be cleaned up       |
 | KEYCLOAK_SERVER_URL                    | String | x        | ""      | The URL of the Keycloak Server which is used to retrieve JTWs to access the XFSC Federated Catalogue                 |

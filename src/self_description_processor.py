@@ -9,7 +9,7 @@ from pyld import jsonld
 
 class SelfDescriptionProcessor:
     """
-    Class is responsible to create Self Descriptions from Claims provided as input.
+    Class can be used to create Self Descriptions from Claims provided as input.
     """
 
     def __init__(self, credential_issuer: str, signature_jwk: JWK):

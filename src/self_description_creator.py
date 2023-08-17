@@ -8,9 +8,9 @@ from flask import Flask, request
 from jwcrypto import jwk
 from jwcrypto.jwk import JWK
 
-from src.claim_file_handler import ClaimFileHandler
-from src.federated_catalogue_client import FederatedCatalogueClient
-from src.self_description_processor import SelfDescriptionProcessor
+from claim_file_handler import ClaimFileHandler
+from federated_catalogue_client import FederatedCatalogueClient
+from self_description_processor import SelfDescriptionProcessor
 
 # -- Environment variables --
 KEYCLOAK_SERVER_URL = os.environ.get("KEYCLOAK_SERVER_URL", default="")
@@ -20,13 +20,11 @@ KEYCLOAK_CLIENT_SECRET = os.environ.get("KEYCLOAK_CLIENT_SECRET", default="")
 FEDERATED_CATALOGUE_URL = os.environ.get("FEDERATED_CATALOGUE_URL", default="")
 CREDENTIAL_ISSUER = os.environ.get("CREDENTIAL_ISSUER")
 CREDENTIAL_ISSUER_PRIVATE_KEY_PEM_PATH = os.environ.get("CREDENTIAL_ISSUER_PRIVATE_KEY_PEM_PATH")
-CLAIM_FILES_DIR = os.environ.get("CLAIM_FILES_DIR", default=os.path.join(os.path.dirname(__file__), "..", "data"))
+CLAIM_FILES_DIR = os.environ.get("CLAIM_FILES_DIR", default=os.path.join("..", "data"))
 CLAIM_FILES_POLL_INTERVAL_SEC = os.environ.get("CLAIM_FILES_POLL_INTERVAL_SEC", default=2.0)
 CLAIM_FILES_CLEANUP_MAX_FILE_AGE_DAYS = os.environ.get("CLAIM_FILES_CLEANUP_MAX_FILE_AGE_DAYS", default=1)
 
 # -- Global variables --
-PROCESSED_FILES_DIR = os.path.join(CLAIM_FILES_DIR, "processed")
-FAILED_FILES_DIR = os.path.join(CLAIM_FILES_DIR, "failed")
 OPERATING_MODE = os.environ.get("OPERATING_MODE", default="API")  # Can be either API | HYBRID
 
 # Variable will be initialized in method init_app() on application startup
@@ -72,41 +70,43 @@ def init_app():
 
     logging.getLogger("werkzeug").addFilter(HealthCheckFilter())
     app = Flask(__name__)
+    app.logger.info("Initializing app")
 
     # Flask-internal logger has been disabled since it logs every request by default which pollutes the log output
     # (especially when receiving health requests in k8s environments) -> could potentially be optimized
     global signature_jwk, self_description_processor
     with app.app_context():
         # before_first_request equivalent here
-        app.logger.info("Before First Request")
+        app.logger.info("Read signing key")
         signature_jwk = read_signature_private_key()
         if signature_jwk is None:
+            app.logger.error("An error occurred while initializing JWK for signatures")
             exit(-1)
 
-        app.logger.info("Signing key is successfully configured")
+        app.logger.info("Signing key has been successfully configured")
+        app.logger.info("Initialization has been finished")
         return app
 
 
 app = init_app()
 self_description_processor = SelfDescriptionProcessor(credential_issuer=CREDENTIAL_ISSUER,
                                                       signature_jwk=signature_jwk)
-federated_catalogue_client = FederatedCatalogueClient(federated_catalogue_url=FEDERATED_CATALOGUE_URL,
-                                                      keycloak_server_url=KEYCLOAK_SERVER_URL,
-                                                      federated_catalogue_user_name=FEDERATED_CATALOGUE_USER_NAME,
-                                                      federated_catalogue_user_password=FEDERATED_CATALOGUE_USER_PASSWORD,
-                                                      keycloak_client_secret=KEYCLOAK_CLIENT_SECRET)
 
 
 def background_task():
     """
     Main function to handle background work.
     """
+    federated_catalogue_client = FederatedCatalogueClient(federated_catalogue_url=FEDERATED_CATALOGUE_URL,
+                                                          keycloak_server_url=KEYCLOAK_SERVER_URL,
+                                                          federated_catalogue_user_name=FEDERATED_CATALOGUE_USER_NAME,
+                                                          federated_catalogue_user_password=FEDERATED_CATALOGUE_USER_PASSWORD,
+                                                          keycloak_client_secret=KEYCLOAK_CLIENT_SECRET)
     claim_file_handler = ClaimFileHandler(claim_files_dir=CLAIM_FILES_DIR,
-                                          processed_files_dir=PROCESSED_FILES_DIR,
-                                          failed_files_dir=FAILED_FILES_DIR,
                                           claim_files_cleanup_max_file_age_days=int(
                                               CLAIM_FILES_CLEANUP_MAX_FILE_AGE_DAYS),
-                                          self_description_creator=self_description_processor)
+                                          self_description_processor=self_description_processor,
+                                          federated_catalogue_client=federated_catalogue_client)
     while True:
         claim_file_handler.process_claim_files()
         claim_file_handler.cleanup_old_files()
@@ -138,6 +138,11 @@ def post_self_description():
 def post_self_description_to_federated_catalogue():
     if request.method == "POST":
         try:
+            federated_catalogue_client = FederatedCatalogueClient(federated_catalogue_url=FEDERATED_CATALOGUE_URL,
+                                                                  keycloak_server_url=KEYCLOAK_SERVER_URL,
+                                                                  federated_catalogue_user_name=FEDERATED_CATALOGUE_USER_NAME,
+                                                                  federated_catalogue_user_password=FEDERATED_CATALOGUE_USER_PASSWORD,
+                                                                  keycloak_client_secret=KEYCLOAK_CLIENT_SECRET)
             claims = request.get_json()
             self_description = self_description_processor.create_self_description(claims=claims)
             federated_catalogue_client.send_to_federated_catalogue(self_description)
@@ -154,9 +159,11 @@ if __name__ == "__main__":
     # The file-based SD creation runs in the background to be able to serve the API and create SDs from files
     # independently
     if OPERATING_MODE == "HYBRID":
+        app.logger.info("Starting app in operating mode = 'HYBRID'")
         background_thread = Thread(target=background_task)
         background_thread.start()
         app.run(debug=False, host="0.0.0.0", port=8080)
         background_thread.join()
     elif OPERATING_MODE == "API":
+        app.logger.info("Starting app in operating mode = 'API'")
         app.run(debug=False, host="0.0.0.0", port=8080)

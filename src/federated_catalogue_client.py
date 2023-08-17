@@ -9,7 +9,7 @@ logger = logging.getLogger()
 
 class FederatedCatalogueClient:
     """
-    Class that allows to interact with the XFSC Federated Catalogue.
+    Class can be used to interact with the XFSC Federated Catalogue.
     """
 
     def __init__(self, federated_catalogue_url: str, keycloak_server_url: str, federated_catalogue_user_name: str,
@@ -23,7 +23,7 @@ class FederatedCatalogueClient:
         :param keycloak_client_secret:
         """
         if not federated_catalogue_url or \
-                keycloak_server_url or \
+                not keycloak_server_url or \
                 not federated_catalogue_user_name or \
                 not federated_catalogue_user_password or \
                 not keycloak_client_secret:
