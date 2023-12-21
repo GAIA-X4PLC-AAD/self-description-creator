@@ -12,7 +12,7 @@ class SelfDescriptionProcessor:
     Class can be used to create Self Descriptions from Claims provided as input.
     """
 
-    def __init__(self, credential_issuer: str, signature_jwk: JWK, legacy_catalogue: bool):
+    def __init__(self, credential_issuer: str, signature_jwk: JWK, use_legacy_catalogue_signature: bool):
         """
 
         :param credential_issuer:
@@ -20,7 +20,7 @@ class SelfDescriptionProcessor:
         """
         self.__credential_issuer = credential_issuer
         self.__signature_jwk = signature_jwk
-        self.__legacy_catalogue = legacy_catalogue
+        self.__use_legacy_catalogue_signature = use_legacy_catalogue_signature
 
     def create_self_description(self, claims: dict) -> dict:
         """
@@ -112,7 +112,7 @@ class SelfDescriptionProcessor:
         hashed_credential = sha256(canonical_credential.encode('utf-8')).hexdigest()
         
         hashed_signature_payload = hashed_credential
-        if self.__legacy_catalogue:
+        if self.__use_legacy_catalogue_signature:
             hashed_signature_payload = bytes.fromhex(hashed_proof + hashed_credential)
 
         # In the following the actual signing process takes place Important info: The following headers must have

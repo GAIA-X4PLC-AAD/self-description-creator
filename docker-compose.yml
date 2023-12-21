@@ -13,7 +13,7 @@ services:
 #      FEDERATED_CATALOGUE_USER_NAME: ""
 #      FEDERATED_CATALOGUE_USER_PASSWORD: ""
 #      FEDERATED_CATALOGUE_URL: ""
-#      LEGACY_CATALOGUE: True
+#      USE_LEGACY_CATALOGUE_SIGNATURE: True
 #      CLAIM_FILES_DIR: "/mnt/data"
     volumes:
       - <local_folder_cert_file>/:/mnt/cert/
