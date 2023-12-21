@@ -17,6 +17,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+
+## [0.4.0] - 2023-12-21
+
+### Changed
+
+- Add support for new signatures and set as default.
+
+
 ## [0.3.0] - 2023-07-27
 
 ### Changed

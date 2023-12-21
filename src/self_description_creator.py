@@ -16,6 +16,7 @@ from self_description_processor import SelfDescriptionProcessor
 KEYCLOAK_SERVER_URL = os.environ.get("KEYCLOAK_SERVER_URL", default="")
 FEDERATED_CATALOGUE_USER_NAME = os.environ.get("FEDERATED_CATALOGUE_USER_NAME", default="")
 FEDERATED_CATALOGUE_USER_PASSWORD = os.environ.get("FEDERATED_CATALOGUE_USER_PASSWORD", default="")
+USE_LEGACY_CATALOGUE_SIGNATURE = os.environ.get("USE_LEGACY_CATALOGUE_SIGNATURE", default="").lower() in ("true", "1")
 KEYCLOAK_CLIENT_SECRET = os.environ.get("KEYCLOAK_CLIENT_SECRET", default="")
 FEDERATED_CATALOGUE_URL = os.environ.get("FEDERATED_CATALOGUE_URL", default="")
 CREDENTIAL_ISSUER = os.environ.get("CREDENTIAL_ISSUER")
@@ -90,7 +91,8 @@ def init_app():
 
 app = init_app()
 self_description_processor = SelfDescriptionProcessor(credential_issuer=CREDENTIAL_ISSUER,
-                                                      signature_jwk=signature_jwk)
+                                                      signature_jwk=signature_jwk,
+                                                      use_legacy_catalogue_signature=USE_LEGACY_CATALOGUE_SIGNATURE)
 
 
 def background_task():
