@@ -93,3 +93,128 @@ paths:
             application/json:
               schema:
                 type: object
+
+  /sd-from-vp-without-proof:
+    post:
+      summary: Creates a Self Description (Verifiable Presentation having a proof) based on a provided Verifiable Presentation without a proof.
+      description: Issuer and Private Key used to create the Proof are configured on the server side.
+      requestBody:
+        description: Verifiable Presentation in JSON-LD format having no proof.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              {
+                "@context": [
+                    "https://www.w3.org/2018/credentials/v1"
+                ],
+                "holder": "did:web:compliance.lab.gaia-x.eu",
+                "id": "http://example.org/presentations/3731",
+                "type": [
+                    "VerifiablePresentation"
+                ],
+                "verifiableCredential": [
+                    {
+                        "@context": [
+                            "https://www.w3.org/2018/credentials/v1",
+                            "https://www.w3.org/2018/credentials/examples/v1"
+                        ],
+                        "credentialSubject": {
+                            "@context": {
+                                "example": "https://github.com/GAIA-X4PLC-AAD/ontology-management/tree/main/examples/example_ontology/",
+                                "openlabel": "https://openlabel.asam.net/V1-0-0/ontologies/",
+                                "sh": "http://www.w3.org/ns/shacl#",
+                                "skos": "http://www.w3.org/2004/02/skos/core#",
+                                "xsd": "http://www.w3.org/2001/XMLSchema#"
+                            },
+                            "@id": "fdfgdfgdf",
+                            "@type": "example:ExampleServiceOffering",
+                            "example:belongs_to": {
+                                "@id": "sdfgdfgdfg"
+                            },
+                            "example:hasJunctionIntersection": {
+                                "@id": "serssefr"
+                            },
+                            "example:property1": {
+                                "@type": "xsd:string",
+                                "@value": "sdfsdf"
+                            },
+                            "example:property2": {
+                                "@type": "xsd:string",
+                                "@value": "svrvgerswv"
+                            }
+                        },
+                        "expirationDate": "2022-06-18T12:30:00Z",
+                        "issuanceDate": "2022-01-01T12:30:00Z",
+                        "issuer": "did:web:compliance.lab.gaia-x.eu",
+                        "proof": {
+                            "created": "2022-01-01T12:30:00Z",
+                            "jws": "eyJiNjQiOmZhbHNlLCJjcml0IjpbImI2NCJdLCJhbGciOiJQUzI1NiJ9..LyowYUxUDtOXur-JsLe_VSEgA9h1ERcHQbuq4Aq3wjrCnb6WIBlm-A1N3P4hVLuxVfWiBK-aNooxynbRAIToQT5sqI3onf6GLjPd53cUOAUnLie7kE7Sd4Vio_Gy085oS9lSc_wIiK6m7ebEownz9UNJuyFJLpKDIkJngZ0RNcsoIl2Ntny9lcXt6B0nDuHbmjfJZZAwqWEaLZTAllI2Fd4vKpOt037PbKDWSF3uk11Zaw5-T48X6E-RqA-fH5VRhKCxK6bpybt7vUfj4tEG0vC5eCou_uolfoCy3YSODcqmK4N2kb6vTDKnRrvIVYJWGrzSTbT9sjpbVeg3eQG3999iGgLWNyYj9k40EuSRfph7i97ODcC-CdkydQFZ_J2HBV6erS3oIPQk_To37Itx2QojK_GgUfiYYG8UQM5suBDKXaog9rYaOl0vP4W7HYqgDQjVVhN4uhhRSmtAD3ICy_Npfy4tccjAWw9_cPZNWY3wdIZpGQPo6yYjLPtRJx5rN1T8ECAQMRT-bnd33M06onzAUu1zDc6v_lyy2dxhtiAQQZH0d_mGVN_uH4_9yL-Tw7WO2B4u-TTICnU1JQ-RJ3gLC0PR9W1ph2EfJf5jYYOkJYYCf-1XQiktuJ9bcpn-OoSqdR5ilh0SWclqA3eu5RjBbI8FRlrgOIVR1UuVHfw",
+                            "proofPurpose": "assertionMethod",
+                            "type": "JsonWebSignature2020",
+                            "verificationMethod": "did:web:compliance.lab.gaia-x.eu"
+                        },
+                        "type": [
+                            "VerifiableCredential"
+                        ]
+                    }
+                ]
+            }
+      responses:
+        '200': # status code
+          description: The created Self Description.
+          content:
+            application/json:
+              schema:
+                type: object
+        '500': # status code
+          description: In case an error occurred.
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /vc-from-claims:
+    post:
+      summary: Creates a Verifiable Credential based on provided Claims.
+      description: Issuer and Private Key used to create the Proof are configured on the server side.
+      requestBody:
+        description: JSON-LD Claims to be placed inside the Verifiable Credential.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              {
+                "id": "https://gaia-x.eu/.well-known/service1.json",
+                "type": "gx:ServiceOffering",
+                "gx:providedBy": {
+                  "id": "https://gaia-x.eu/.well-known/participant.json"
+                },
+                "gx:policy": "",
+                "gx:termsAndConditions": {
+                  "gx:URL": "http://termsandconds.com",
+                  "gx:hash": "d8402a23de560f5ab34b22d1a142feb9e13b3143"
+                },
+                "gx:dataAccountExport": {
+                  "gx:requestType": "API",
+                  "gx:accessType": "digital",
+                  "gx:formatType": "application/json"
+                }
+              }
+      responses:
+        '200': # status code
+          description: The created Self Description.
+          content:
+            application/json:
+              schema:
+                type: object
+        '500': # status code
+          description: In case an error occurred.
+          content:
+            application/json:
+              schema:
+                type: object

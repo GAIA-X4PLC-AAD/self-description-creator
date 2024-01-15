@@ -6,6 +6,7 @@ from jwcrypto.common import base64url_encode
 from jwcrypto.jwk import JWK
 from pyld import jsonld
 
+fixed_datetime = datetime(2022, 1, 1, 12, 30, 0)
 
 class SelfDescriptionProcessor:
     """
@@ -38,8 +39,11 @@ class SelfDescriptionProcessor:
         :param claims: Set of Claims made about certain subject
         :return: A W3C Verifiable Credential
         """
-        issuance_date = datetime.utcnow().replace(microsecond=0)
+        ### issuance_date = datetime.utcnow().replace(microsecond=0)
+        ### expiration_date = issuance_date + timedelta(weeks=24)
+        issuance_date = fixed_datetime.replace(microsecond=0)
         expiration_date = issuance_date + timedelta(weeks=24)
+
         credential = {
             "@context": [
                 "https://www.w3.org/2018/credentials/v1",
@@ -90,7 +94,8 @@ class SelfDescriptionProcessor:
         signing_algorithm = "PS256"
         proof = {
             "type": "JsonWebSignature2020",
-            "created": datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
+            ### "created": datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
+            "created": fixed_datetime.replace(microsecond=0).isoformat() + "Z",
             "verificationMethod": self.__credential_issuer,
             "proofPurpose": "assertionMethod",
         }
@@ -107,9 +112,21 @@ class SelfDescriptionProcessor:
             "format": "application/n-quads"}
         canonical_proof = jsonld.normalize(proof_for_normalization, options=normalization_options)
         canonical_credential = jsonld.normalize(credential, options=normalization_options)
-        hashed_proof = sha256(canonical_proof.encode('utf-8')).digest()
-        hashed_credential = sha256(canonical_credential.encode('utf-8')).digest()
-        hashed_signature_payload = hashed_proof + hashed_credential
+        
+        
+        
+        # hashed_proof = sha256(canonical_proof.encode('utf-8')).digest()
+        # hashed_credential = sha256(canonical_credential.encode('utf-8')).digest()
+        # hashed_signature_payload = hashed_proof + hashed_credential
+
+
+
+        hashed_proof = sha256(canonical_proof.encode('utf-8')).hexdigest()
+        hashed_credential = sha256(canonical_credential.encode('utf-8')).hexdigest()
+        hashed_signature_payload = hashed_credential
+        hashed_signature_payload = bytes.fromhex(hashed_proof + hashed_credential)
+
+
 
         # In the following the actual signing process takes place Important info: The following headers must have
         # this exact format (which is defined in the related Specification)
