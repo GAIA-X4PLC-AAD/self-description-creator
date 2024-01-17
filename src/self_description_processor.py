@@ -39,10 +39,10 @@ class SelfDescriptionProcessor:
         :param claims: Set of Claims made about certain subject
         :return: A W3C Verifiable Credential
         """
-        ### issuance_date = datetime.utcnow().replace(microsecond=0)
-        ### expiration_date = issuance_date + timedelta(weeks=24)
-        issuance_date = fixed_datetime.replace(microsecond=0)
+        issuance_date = datetime.utcnow().replace(microsecond=0)
         expiration_date = issuance_date + timedelta(weeks=24)
+        ### issuance_date = fixed_datetime.replace(microsecond=0)
+        ### expiration_date = issuance_date + timedelta(weeks=24)
 
         credential = {
             "@context": [
@@ -94,8 +94,8 @@ class SelfDescriptionProcessor:
         signing_algorithm = "PS256"
         proof = {
             "type": "JsonWebSignature2020",
-            ### "created": datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
-            "created": fixed_datetime.replace(microsecond=0).isoformat() + "Z",
+            "created": datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
+            ### "created": fixed_datetime.replace(microsecond=0).isoformat() + "Z",
             "verificationMethod": self.__credential_issuer,
             "proofPurpose": "assertionMethod",
         }

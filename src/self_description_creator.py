@@ -123,7 +123,7 @@ def health():
 def post_self_description():
     try:
         claims = request.get_json()
-        self_description = self_description_processor.create_self_description(claims=claims)
+        self_description = self_description_processor.create_self_description(claims=claims) # type: ignore
         return self_description, 200
     except Exception as e:
         error_msg = "An error occurred while processing the request [error: {error_details}]".format(
@@ -131,7 +131,6 @@ def post_self_description():
         app.logger.warning(error_msg)
         data = {"status": "failed", "error": error_msg}
         return data, 500
-
 
 
 @app.route("/federated-catalogue/self-descriptions", methods=["POST"])
@@ -143,7 +142,7 @@ def post_self_description_to_federated_catalogue():
                                                                 federated_catalogue_user_password=FEDERATED_CATALOGUE_USER_PASSWORD,
                                                                 keycloak_client_secret=KEYCLOAK_CLIENT_SECRET)
         claims = request.get_json()
-        self_description = self_description_processor.create_self_description(claims=claims)
+        self_description = self_description_processor.create_self_description(claims=claims) # type: ignore
         federated_catalogue_client.send_to_federated_catalogue(self_description)
         data = {"status": "success"}
         return data, 201
@@ -152,7 +151,6 @@ def post_self_description_to_federated_catalogue():
         app.logger.warning(error_msg)
         data = {"status": "failed", "error": error_msg}
         return data, 500
-
 
 
 @app.route("/sd-from-vp-without-proof", methods=["POST"])
@@ -169,12 +167,25 @@ def create_sd_from_vp_without_proof():
         return data, 500
 
 
-
 @app.route("/vc-from-claims", methods=["POST"])
 def create_vc_from_claims():
     try:
         claims = request.get_json()
         self_description = self_description_processor.create_verifiable_credential(claims=claims) # type: ignore
+        return self_description, 200
+    except Exception as e:
+        error_msg = "An error occurred while processing the request [error: {error_details}]".format(
+            error_details=e.args)
+        app.logger.warning(error_msg)
+        data = {"status": "failed", "error": error_msg}
+        return data, 500
+
+
+@app.route("/sd-from-vcs", methods=["POST"])
+def create_sd_from_vcs():
+    try:
+        vcs = request.get_json()
+        self_description = self_description_processor.create_verifiable_presentation(verifiable_credentials=vcs) # type: ignore
         return self_description, 200
     except Exception as e:
         error_msg = "An error occurred while processing the request [error: {error_details}]".format(

@@ -218,3 +218,119 @@ paths:
             application/json:
               schema:
                 type: object
+
+  /sd-from-vcs:
+    post:
+      summary: Creates a Verifiable Presentation/Self Description based on a provided list of Verifiable Credentials.
+      description: Issuer and Private Key used to create the Proof are configured on the server side.
+      requestBody:
+        description: List of Verifiable Credentials to be placed inside the Verifiable Presentation/Self Description.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              [
+                  {
+                  "@context": [
+                      "https://www.w3.org/2018/credentials/v1",
+                      "https://www.w3.org/2018/credentials/examples/v1"
+                  ],
+                  "credentialSubject": {
+                      "@context": {
+                          "example": "https://github.com/GAIA-X4PLC-AAD/ontology-management/tree/main/examples/example_ontology/",
+                          "openlabel": "https://openlabel.asam.net/V1-0-0/ontologies/",
+                          "sh": "http://www.w3.org/ns/shacl#",
+                          "skos": "http://www.w3.org/2004/02/skos/core#",
+                          "xsd": "http://www.w3.org/2001/XMLSchema#"
+                      },
+                      "@id": "ololololoolollo",
+                      "@type": "example:ExampleServiceOffering",
+                      "example:belongs_to": {
+                          "@id": "fghdhdfgrttz"
+                      },
+                      "example:hasJunctionIntersection": {
+                          "@id": "fxghfhgfh"
+                      },
+                      "example:property1": {
+                          "@type": "xsd:string",
+                          "@value": "lololololol"
+                      },
+                      "example:property2": {
+                          "@type": "xsd:string",
+                          "@value": "lololloolol"
+                      }
+                  },
+                  "expirationDate": "2022-06-18T12:30:00Z",
+                  "issuanceDate": "2022-01-01T12:30:00Z",
+                  "issuer": "did:web:compliance.lab.gaia-x.eu",
+                  "proof": {
+                      "created": "2022-01-01T12:30:00Z",
+                      "jws": "eyJiNjQiOmZhbHNlLCJjcml0IjpbImI2NCJdLCJhbGciOiJQUzI1NiJ9..gv_mzzc9aoZbbVUpVZ3VDs3AAoLm9n9On5s9YNwBj-XqJx3gl2lJozy1uz22GhaaLJ3J1SQa_-diZFgIfi6TmCLnV78j2Xs61aNknCFhBWrvt_GrqV13dCIhRas1pxnBVLknBrhh-9bFj_b5_zTFGACNfBUsf2n4LnS-gk14JeyDc_T9GGTa1_tDqYljZZLonY9oe6raQ6NUdgNnAOX5KeHyWN7F0NGz4sXfiIsJU_GidjvTa4pyM7mQfpXpgX7paOENSkrWA3dDtlyxsyUmIRyAzGvizifVesQfaYucWKmpgvO2wMi_KmsRQmy2E2Xvb8dVkQ3hPl2BUiJVnNOcC3FyKkrFue-YIvZEKSjuYlX2c-EaK0sg5M0OkE7kd2VBT8Hy_UnM1qqMmHQQj2TaSnkr2T04B4qVLcHQVQ9qDP9JH-8g3BsGdFMZK-Xi_rKp1jk_lItCkd_dBTfFFIbGxMp-ckVr3cA6wsg8bbs8kqc9yU2xfosZkzbbYlJq5Ey3bok84R5NZSQS-YI2IDcjMgx-v2A__LEVtmkktf_yRHiykqxvdDvQmXNThTxOQkeh8_9weFqkmtIaFJHtlFujmRkE1-X790Na92qayG3QKvFZs9Vg2D2EeVq7CLfAeHXS77YFbLNSTme7WW97PMhgBBTBHaQfQUNBVkNYuHZiZ7c",
+                      "proofPurpose": "assertionMethod",
+                      "type": "JsonWebSignature2020",
+                      "verificationMethod": "did:web:compliance.lab.gaia-x.eu"
+                  },
+                  "type": [
+                      "VerifiableCredential"
+                  ]
+              },
+              {
+                  "@context": [
+                      "https://www.w3.org/2018/credentials/v1",
+                      "https://www.w3.org/2018/credentials/examples/v1"
+                  ],
+                  "credentialSubject": {
+                      "@context": {
+                          "example": "https://github.com/GAIA-X4PLC-AAD/ontology-management/tree/main/examples/example_ontology/",
+                          "openlabel": "https://openlabel.asam.net/V1-0-0/ontologies/",
+                          "sh": "http://www.w3.org/ns/shacl#",
+                          "skos": "http://www.w3.org/2004/02/skos/core#",
+                          "xsd": "http://www.w3.org/2001/XMLSchema#"
+                      },
+                      "@id": "asdfasd",
+                      "@type": "example:ExampleServiceOffering",
+                      "example:belongs_to": {
+                          "@id": "fdgfdd"
+                      },
+                      "example:hasJunctionIntersection": {
+                          "@id": "dfgdg"
+                      },
+                      "example:property1": {
+                          "@type": "xsd:string",
+                          "@value": "dfghjt"
+                      },
+                      "example:property2": {
+                          "@type": "xsd:string",
+                          "@value": "ththththt"
+                      }
+                  },
+                  "expirationDate": "2022-06-18T12:30:00Z",
+                  "issuanceDate": "2022-01-01T12:30:00Z",
+                  "issuer": "did:web:compliance.lab.gaia-x.eu",
+                  "proof": {
+                      "created": "2022-01-01T12:30:00Z",
+                      "jws": "eyJiNjQiOmZhbHNlLCJjcml0IjpbImI2NCJdLCJhbGciOiJQUzI1NiJ9..ZEsy_Y_psm67lu7Ie48eLqNTCIfCl0L1oYe4XPYCk36C4mRDhyuLI8oQ6EyZ8_AxhYhlV25lLIMZK6wpj3KjHOH3n3mvGW4qLalslly2n_0hal3CN8JZ2wlopCoOGy2-q-Jh6n1u9-glhQSDBzCngSlV0iFvP5IU-mcUDlvoQ52MzqhWtHGxEe40MS0N_GBwFiWmvCCj1PmGZeEyJoRolsIVKKIkvhQ3mEvrjx56-eoebZByUN9JPBzopkGEd7Y5hq4ppDpZEXAPS8a2zhYi0eNHIojkunxgcgD8PZ90IGky0Z8QKgokzXsvkajd8iqT2cki-1kn0I2F_L8B-3bfTqT4W1MuG-2LWDgG7nyOj4wbhkzJ2zL-6obsRMTAxfa4JjcTOoy29_S2GAuwav08kzJpv57ZV5XilCntJh0pR0du4fJxEvgm-0olB6kgFhgugzbnvbHzhYBk8212Mr0f6vuTt3b8cZNj9NgwryGAojqe-4q8dXhYG8GsG_Ou54DcLRbo_17T6QF7DeA6Ud35EyavsmsC7eAeQcjoM5hKYFYFsMfTS1FvZRjUNKnwBcnMKT9BxlXV1uxF8a3AsryEsnhdUwoblNm-bAGk6e-FRRo72nU3psWzbiBxcR-IvvtC6OfXfwvnSLOZ9eOQtCctp1k6RN363jpup3dS4cxscj0",
+                      "proofPurpose": "assertionMethod",
+                      "type": "JsonWebSignature2020",
+                      "verificationMethod": "did:web:compliance.lab.gaia-x.eu"
+                  },
+                  "type": [
+                      "VerifiableCredential"
+                  ]
+              }
+              ]
+      responses:
+        '200': # status code
+          description: The created Self Description.
+          content:
+            application/json:
+              schema:
+                type: object
+        '500': # status code
+          description: In case an error occurred.
+          content:
+            application/json:
+              schema:
+                type: object
