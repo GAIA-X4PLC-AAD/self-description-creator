@@ -106,22 +106,11 @@ class SelfDescriptionProcessor:
             "algorithm": "URDNA2015",
             "format": "application/n-quads"}
         canonical_proof = jsonld.normalize(proof_for_normalization, options=normalization_options)
-        canonical_credential = jsonld.normalize(credential, options=normalization_options)
+        canonical_credential = jsonld.normalize(credential, options=normalization_options) 
         
-        
-        
-        # hashed_proof = sha256(canonical_proof.encode('utf-8')).digest()
-        # hashed_credential = sha256(canonical_credential.encode('utf-8')).digest()
-        # hashed_signature_payload = hashed_proof + hashed_credential
-
-
-
-        hashed_proof = sha256(canonical_proof.encode('utf-8')).hexdigest()
-        hashed_credential = sha256(canonical_credential.encode('utf-8')).hexdigest()
-        hashed_signature_payload = hashed_credential
-        hashed_signature_payload = bytes.fromhex(hashed_proof + hashed_credential)
-
-
+        hashed_proof = sha256(canonical_proof.encode('utf-8')).digest()
+        hashed_credential = sha256(canonical_credential.encode('utf-8')).digest()
+        hashed_signature_payload = hashed_proof + hashed_credential
 
         # In the following the actual signing process takes place Important info: The following headers must have
         # this exact format (which is defined in the related Specification)
