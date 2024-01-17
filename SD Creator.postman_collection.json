@@ -1,8 +1,9 @@
 {
 	"info": {
-		"_postman_id": "19d2a701-9729-4cbc-91cf-6e0e71b5878d",
+		"_postman_id": "8397fe34-7af9-4d9c-86c1-c6d1237d1679",
 		"name": "SD Creator",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29915051"
 	},
 	"item": [
 		{
@@ -34,13 +35,13 @@
 			"response": []
 		},
 		{
-			"name": "Create Self Description",
+			"name": "Create Self Description from Claims",
 			"request": {
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "<place_claims_here><place_JSON_claims_here>",
+					"raw": "<place_JSON_claims_here>",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -55,6 +56,87 @@
 					],
 					"path": [
 						"self-description"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Proof to VP without Proof",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "<place_JSON_VP_without_proof_here>",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{sd_creator_protocol}}://{{sd_creator_address}}/sd-from-vp-without-proof",
+					"protocol": "{{sd_creator_protocol}}",
+					"host": [
+						"{{sd_creator_address}}"
+					],
+					"path": [
+						"sd-from-vp-without-proof"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Verifiable Credential from Claims",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "<place_JSON_claims_here>",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{sd_creator_protocol}}://{{sd_creator_address}}/vc-from-claims",
+					"protocol": "{{sd_creator_protocol}}",
+					"host": [
+						"{{sd_creator_address}}"
+					],
+					"path": [
+						"vc-from-claims"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create SD from VCs",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "<place_JSON_VC_list_here> <[VC1,VC2]>",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{sd_creator_protocol}}://{{sd_creator_address}}/sd-from-vcs",
+					"protocol": "{{sd_creator_protocol}}",
+					"host": [
+						"{{sd_creator_address}}"
+					],
+					"path": [
+						"sd-from-vcs"
 					]
 				}
 			},
