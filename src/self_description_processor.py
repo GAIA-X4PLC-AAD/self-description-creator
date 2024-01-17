@@ -6,8 +6,6 @@ from jwcrypto.common import base64url_encode
 from jwcrypto.jwk import JWK
 from pyld import jsonld
 
-fixed_datetime = datetime(2022, 1, 1, 12, 30, 0)
-
 class SelfDescriptionProcessor:
     """
     Class can be used to create Self Descriptions from Claims provided as input.
@@ -41,8 +39,6 @@ class SelfDescriptionProcessor:
         """
         issuance_date = datetime.utcnow().replace(microsecond=0)
         expiration_date = issuance_date + timedelta(weeks=24)
-        ### issuance_date = fixed_datetime.replace(microsecond=0)
-        ### expiration_date = issuance_date + timedelta(weeks=24)
 
         credential = {
             "@context": [
@@ -95,7 +91,6 @@ class SelfDescriptionProcessor:
         proof = {
             "type": "JsonWebSignature2020",
             "created": datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
-            ### "created": fixed_datetime.replace(microsecond=0).isoformat() + "Z",
             "verificationMethod": self.__credential_issuer,
             "proofPurpose": "assertionMethod",
         }
