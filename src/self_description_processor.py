@@ -12,7 +12,7 @@ class SelfDescriptionProcessor:
     Class can be used to create Self Descriptions from Claims provided as input.
     """
 
-    def __init__(self, credential_issuer: str, signature_jwk: JWK):
+    def __init__(self, credential_issuer: str, signature_jwk: JWK, use_legacy_catalogue_signature: bool):
         """
 
         :param credential_issuer:
@@ -20,6 +20,7 @@ class SelfDescriptionProcessor:
         """
         self.__credential_issuer = credential_issuer
         self.__signature_jwk = signature_jwk
+        self.__use_legacy_catalogue_signature = use_legacy_catalogue_signature
 
     def create_self_description(self, claims: dict) -> dict:
         """
@@ -94,7 +95,7 @@ class SelfDescriptionProcessor:
             "verificationMethod": self.__credential_issuer,
             "proofPurpose": "assertionMethod",
         }
-        # Important info: The @context provided in the proof object is required to successfully perform the
+        # Important info (legacy catalogue): The @context provided in the proof object is required to successfully perform the
         # normalization with the used pyld library. This is what the corresponding Java implementation does as well,
         # but with API version 'v3', instead of 'v3-unstable'. But the 'v3' just returns a HTTP 404. Not sure at the
         # moment, why it works with the Java implementation. The actual proof fields don't need this context.
@@ -107,9 +108,12 @@ class SelfDescriptionProcessor:
             "format": "application/n-quads"}
         canonical_proof = jsonld.normalize(proof_for_normalization, options=normalization_options)
         canonical_credential = jsonld.normalize(credential, options=normalization_options)
-        hashed_proof = sha256(canonical_proof.encode('utf-8')).digest()
-        hashed_credential = sha256(canonical_credential.encode('utf-8')).digest()
-        hashed_signature_payload = hashed_proof + hashed_credential
+        hashed_proof = sha256(canonical_proof.encode('utf-8')).hexdigest()
+        hashed_credential = sha256(canonical_credential.encode('utf-8')).hexdigest()
+        
+        hashed_signature_payload = hashed_credential
+        if self.__use_legacy_catalogue_signature:
+            hashed_signature_payload = bytes.fromhex(hashed_proof + hashed_credential)
 
         # In the following the actual signing process takes place Important info: The following headers must have
         # this exact format (which is defined in the related Specification)
