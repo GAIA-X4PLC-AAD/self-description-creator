@@ -138,3 +138,7 @@ dmypy.json
 cython_debug/
 
 *.iml
+
+# for implementation and testing
+secrets/
+.vscode
