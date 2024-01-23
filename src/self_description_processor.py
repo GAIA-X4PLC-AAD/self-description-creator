@@ -6,12 +6,14 @@ from jwcrypto.common import base64url_encode
 from jwcrypto.jwk import JWK
 from pyld import jsonld
 
+from did_store import DIDStore
+import os
+
 class SelfDescriptionProcessor:
     """
     Class can be used to create Self Descriptions from Claims provided as input.
     """
-
-    def __init__(self, credential_issuer: str, signature_jwk: JWK, use_legacy_catalogue_signature: bool):
+    def __init__(self, credential_issuer: str, signature_jwk: JWK, use_legacy_catalogue_signature: bool, did_storage_path: str):
         """
 
         :param credential_issuer:
@@ -20,6 +22,7 @@ class SelfDescriptionProcessor:
         self.__credential_issuer = credential_issuer
         self.__signature_jwk = signature_jwk
         self.__use_legacy_catalogue_signature = use_legacy_catalogue_signature
+        self.__did_storage_path = os.path.join(did_storage_path)
 
     def create_self_description(self, claims: dict) -> dict:
         """
@@ -37,7 +40,7 @@ class SelfDescriptionProcessor:
         (see https://www.w3.org/TR/vc-data-model/).
         :param claims: Set of Claims made about certain subject
         :return: A W3C Verifiable Credential
-        """
+        """         
         issuance_date = datetime.utcnow().replace(microsecond=0)
         expiration_date = issuance_date + timedelta(weeks=24)
 
@@ -50,7 +53,9 @@ class SelfDescriptionProcessor:
             "issuanceDate": issuance_date.isoformat() + "Z",
             "expirationDate": expiration_date.isoformat() + "Z",
             "credentialSubject": claims}
-        credential["credentialSubject"].update(claims)
+        if self.__did_storage_path != "":
+            did_store = DIDStore(self.__did_storage_path)
+            credential["id"] = did_store.get_uuid_for_object(credential)
         vc = self._add_proof(credential)
         return vc
 
