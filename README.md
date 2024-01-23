@@ -73,6 +73,7 @@ container.
 | FEDERATED_CATALOGUE_USER_NAME          | String | x        | ""      | The Keycloak user which has appropriate permissions to add Self Description to the Federated Catalogue.              |
 | FEDERATED_CATALOGUE_USER_PASSWORD      | String | x        | ""      | Password for the Keycloak user                                                                                       |
 | FEDERATED_CATALOGUE_URL                | String | x        | ""      | The URL of the XFSC Federated Catalogue                                                                              |
+| USE_LEGACY_CATALOGUE_SIGNATURE         | String | x        | False   | Use the legacy XFSC Federated Catalogue signature                                                                    |
 | OPERATING_MODE                         | String | x        | _API_   | Describes the operating mode of the application. Can be either "API" or "HYBRID"                                     |
 
 ### Operating modes
