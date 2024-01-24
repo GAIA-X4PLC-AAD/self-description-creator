@@ -22,7 +22,7 @@ class SelfDescriptionProcessor:
         self.__credential_issuer = credential_issuer
         self.__signature_jwk = signature_jwk
         self.__use_legacy_catalogue_signature = use_legacy_catalogue_signature
-        self.__did_storage_path = os.path.join(did_storage_path)
+        self.__did_store = DIDStore(storage_path=os.path.join(did_storage_path), storage_type="local")
 
     def create_self_description(self, claims: dict) -> dict:
         """
@@ -53,9 +53,9 @@ class SelfDescriptionProcessor:
             "issuanceDate": issuance_date.isoformat() + "Z",
             "expirationDate": expiration_date.isoformat() + "Z",
             "credentialSubject": claims}
-        if self.__did_storage_path != "":
-            did_store = DIDStore(self.__did_storage_path)
-            credential["id"] = did_store.get_uuid_for_object(credential)
+        if self.__did_store.get_type() != "None":
+            self.__did_store.create_did_store_object(credential)
+            credential["id"] = 
         vc = self._add_proof(credential)
         return vc
 
