@@ -24,6 +24,7 @@ CREDENTIAL_ISSUER_PRIVATE_KEY_PEM_PATH = os.environ.get("CREDENTIAL_ISSUER_PRIVA
 CLAIM_FILES_DIR = os.environ.get("CLAIM_FILES_DIR", default=os.path.join("..", "data"))
 CLAIM_FILES_POLL_INTERVAL_SEC = float(os.environ.get("CLAIM_FILES_POLL_INTERVAL_SEC", default=2.0))
 CLAIM_FILES_CLEANUP_MAX_FILE_AGE_DAYS = os.environ.get("CLAIM_FILES_CLEANUP_MAX_FILE_AGE_DAYS", default=1)
+DID_STORAGE_TYPE = os.environ.get("DID_STORAGE_TYPE", default="None")
 DID_STORAGE_PATH = os.environ.get("DID_STORAGE_PATH", default="")
 
 # -- Global variables --
@@ -95,6 +96,7 @@ app = init_app()
 self_description_processor = SelfDescriptionProcessor(credential_issuer=CREDENTIAL_ISSUER,
                                                     signature_jwk=signature_jwk,
                                                     use_legacy_catalogue_signature=USE_LEGACY_CATALOGUE_SIGNATURE,
+                                                    did_storage_type=DID_STORAGE_TYPE,
                                                     did_storage_path=DID_STORAGE_PATH)
 
 def background_task():

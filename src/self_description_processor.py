@@ -13,7 +13,7 @@ class SelfDescriptionProcessor:
     """
     Class can be used to create Self Descriptions from Claims provided as input.
     """
-    def __init__(self, credential_issuer: str, signature_jwk: JWK, use_legacy_catalogue_signature: bool, did_storage_path: str):
+    def __init__(self, credential_issuer: str, signature_jwk: JWK, use_legacy_catalogue_signature: bool, did_storage_type: str, did_storage_path: str):
         """
 
         :param credential_issuer:
@@ -22,7 +22,9 @@ class SelfDescriptionProcessor:
         self.__credential_issuer = credential_issuer
         self.__signature_jwk = signature_jwk
         self.__use_legacy_catalogue_signature = use_legacy_catalogue_signature
-        self.__did_store = DIDStore(storage_path=os.path.join(did_storage_path), storage_type="local")
+        self.__did_storage_type = did_storage_type
+        if self.__did_storage_type != "None":
+            self.__did_store = DIDStore(storage_path=os.path.join(did_storage_path), storage_type=did_storage_type)
 
     def create_self_description(self, claims: dict) -> dict:
         """
@@ -53,9 +55,9 @@ class SelfDescriptionProcessor:
             "issuanceDate": issuance_date.isoformat() + "Z",
             "expirationDate": expiration_date.isoformat() + "Z",
             "credentialSubject": claims}
-        if self.__did_store.get_type() != "None":
-            self.__did_store.create_did_store_object(credential)
-            credential["id"] = 
+        if self.__did_storage_type != "None":
+            did_store_object = self.__did_store.create_did_store_object(credential)
+            credential = did_store_object.get_object_content()
         vc = self._add_proof(credential)
         return vc
 
@@ -74,6 +76,9 @@ class SelfDescriptionProcessor:
             "holder": holder,
             "verifiableCredential": verifiable_credentials
         }
+        if self.__did_storage_type != "None":
+            did_store_object = self.__did_store.create_did_store_object(presentation)
+            presentation = did_store_object.get_object_content()
         vp = self._add_proof(presentation)
         return vp
 
