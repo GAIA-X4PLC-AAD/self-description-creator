@@ -29,7 +29,7 @@ class DIDStore:
                 return open_file_and_get_file_content(os.path.join(self.get_path(), filename))
         raise Exception("UUID has not been found")
 
-    def get_saved_objects(self) -> list:
+    def get_saved_objects(self) -> list[DIDStoreObject]:
         return self._saved_objects
     
     def create_did_store_object(self, object_content: dict[str, str]) -> DIDStoreObject:
