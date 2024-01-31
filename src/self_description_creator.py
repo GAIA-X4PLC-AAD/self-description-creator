@@ -1,3 +1,5 @@
+from __future__ import annotations # used for linting (type annotations)
+
 import logging
 import os
 import time
@@ -11,6 +13,7 @@ from jwcrypto.jwk import JWK
 from claim_file_handler import ClaimFileHandler
 from federated_catalogue_client import FederatedCatalogueClient
 from self_description_processor import SelfDescriptionProcessor
+from did_store import DIDStore
 
 # -- Environment variables --
 KEYCLOAK_SERVER_URL = os.environ.get("KEYCLOAK_SERVER_URL", default="")
@@ -93,11 +96,11 @@ def init_app():
 
 app = init_app()
 
+did_store = DIDStore(storage_path=DID_STORAGE_PATH, storage_type=DID_STORAGE_TYPE)
 self_description_processor = SelfDescriptionProcessor(credential_issuer=CREDENTIAL_ISSUER,
                                                     signature_jwk=signature_jwk,
                                                     use_legacy_catalogue_signature=USE_LEGACY_CATALOGUE_SIGNATURE,
-                                                    did_storage_type=DID_STORAGE_TYPE,
-                                                    did_storage_path=DID_STORAGE_PATH)
+                                                    did_store=did_store)
 
 def background_task():
     """
@@ -199,6 +202,31 @@ def create_sd_from_vcs():
         app.logger.warning(error_msg)
         data = {"status": "failed", "error": error_msg}
         return data, 500
+    
+
+@app.route("/id-documents", methods=["GET", "POST"]) 
+def return_id_documents():
+    try:
+        if request.method == "POST":
+            request_body = request.get_json()
+            if request_body is not None:
+                did_document = did_store.get_saved_object(request_body["uuid"])
+                return did_document, 200
+            else:
+                return {"status": "failed", "error": "No proper ID provided"}, 500
+        elif request.method == "GET": 
+            data = {}
+            for did_object in did_store.get_saved_objects():
+                data[did_object.get_uuid()] = did_object.get_object_content()
+            return data, 200
+        else: raise Exception("An unsupported http-method has been used")
+    except Exception as e:
+        error_msg = "An error occurred while processing the request [error: {error_details}]".format(
+            error_details=e.args)
+        app.logger.warning(error_msg)
+        data = {"status": "failed", "error": error_msg}
+        return data, 500
+    
 
 if __name__ == "__main__":
     # The file-based SD creation runs in the background to be able to serve the API and create SDs from files

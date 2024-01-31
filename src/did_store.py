@@ -3,6 +3,7 @@ import uuid
 import os
 
 
+
 class DIDStore:
     """
     Class can be used to create a local did store and create did documents and did:web IDs.
@@ -19,8 +20,21 @@ class DIDStore:
     def get_type(self) -> str:
         return self._storage_type
     
-    def create_did_store_object(self, object_content: dict[str, str], object_uuid=uuid.uuid4().hex) -> DIDStoreObject:
-        object_id = "did:web:vcstorage.gxfs.gx4fm.org:" + object_uuid
+    def get_path(self) -> str:
+        return self._storage_path
+    
+    def get_saved_object(self, id: str) -> str:      
+        for filename in os.listdir(self.get_path()):
+            if id in filename:
+                return open_file_and_get_file_content(os.path.join(self.get_path(), filename))
+        raise Exception("UUID has not been found")
+
+    def get_saved_objects(self) -> list:
+        return self._saved_objects
+    
+    def create_did_store_object(self, object_content: dict[str, str]) -> DIDStoreObject:
+        object_uuid = uuid.uuid4().hex
+        object_id = "did:web:sd-creator.gxfs.gx4fm.org:id-documents:" + object_uuid
         did_store_object = DIDStoreObject(self, object_uuid, object_id, object_content)
         self.save_object_into_storage(did_store_object)
         return did_store_object
@@ -31,11 +45,11 @@ class DIDStore:
                 did_store_object_to_save.set_storage_path(os.path.join(self._storage_path, did_store_object_to_save.get_uuid() + ".json"))
                 with open(did_store_object_to_save.get_storage_path(), "w") as did_file:
                     did_file.write(str(did_store_object_to_save.get_object_content()))
-            elif self._storage_type == "cloud":
-                print("function not implemented yet")
-        except:
+            else:
+                raise Exception("Storage type is not implemented yet")
+        except Exception as e:
             did_store_object_to_save.set_storage_path(None)
-            print("Could not save DIDStoreObject")
+            print("Could not save DIDStoreObject: " + str(e.args))
         else:
             self._saved_objects.append(did_store_object_to_save)
 
@@ -66,3 +80,12 @@ class DIDStoreObject:
             raise Exception("No filepath specified")
         else:
             return self._stored_path
+
+
+
+# convenience function to simplify code
+def open_file_and_get_file_content(filepath: str) -> str:
+    f = open(filepath, "r")
+    document_content = f.read()
+    f.close()
+    return document_content

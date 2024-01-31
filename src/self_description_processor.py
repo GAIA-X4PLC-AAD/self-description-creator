@@ -7,13 +7,12 @@ from jwcrypto.jwk import JWK
 from pyld import jsonld
 
 from did_store import DIDStore
-import os
 
 class SelfDescriptionProcessor:
     """
     Class can be used to create Self Descriptions from Claims provided as input.
     """
-    def __init__(self, credential_issuer: str, signature_jwk: JWK, use_legacy_catalogue_signature: bool, did_storage_type: str, did_storage_path: str):
+    def __init__(self, credential_issuer: str, signature_jwk: JWK, use_legacy_catalogue_signature: bool, did_store: DIDStore) -> None:
         """
 
         :param credential_issuer:
@@ -22,9 +21,9 @@ class SelfDescriptionProcessor:
         self.__credential_issuer = credential_issuer
         self.__signature_jwk = signature_jwk
         self.__use_legacy_catalogue_signature = use_legacy_catalogue_signature
-        self.__did_storage_type = did_storage_type
+        self.__did_storage_type = did_store.get_type()
         if self.__did_storage_type != "None":
-            self.__did_store = DIDStore(storage_path=os.path.join(did_storage_path), storage_type=did_storage_type)
+            self.__did_store = did_store
 
     def create_self_description(self, claims: dict) -> dict:
         """
