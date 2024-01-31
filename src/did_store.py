@@ -54,6 +54,9 @@ class DIDStore:
             self._saved_objects.append(did_store_object_to_save)
 
 class DIDStoreObject:
+    """
+    Class can be used to create a new object, which can be saved in the regarding DIDStore.
+    """
 
     def __init__(self, related_did_store: DIDStore, object_uuid: str, object_id: str, object_content: dict[str, str]) -> None:
         self._id = object_id
