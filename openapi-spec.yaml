@@ -6,12 +6,12 @@ servers:
   - url: https://sd-creator.gxfs.gx4fm.org
     description: Demonstration server - maintained by msg.
 paths:
-  /federated-catalogue/self-descriptions:
+  /federated-catalogue/upload-from-claims:
     post:
-      summary: Creates a sample Self Description based on provided Claims and adds it to configured GXFS Federated Catalogue instance.
+      summary: Creates a sample Verifiable Presentation based on provided Claims and adds it to configured GXFS Federated Catalogue instance.
       description: Issuer and Private Key used for creating the Proof are configured on server side.
       requestBody:
-        description: JSON-LD Claims to be placed inside the Verifiable Credential of the resulting Self Description.
+        description: JSON-LD Claims to be placed inside the Verifiable Credential of the resulting Verifiable Presenation.
         required: true
         content:
           application/json:
@@ -38,7 +38,7 @@ paths:
               }
       responses:
         "201": # status code
-          description: In case the Self Description has been created and successfully added to the configured GXFS Federated Catalogue instance.
+          description: In case the Verifiable Presentation has been created and successfully added to the configured GXFS Federated Catalogue instance.
           content:
             application/json:
               schema:
@@ -51,12 +51,17 @@ paths:
               schema:
                 type: object
 
-  /self-description:
+  /federated-catalogue/self-descriptions:
     post:
-      summary: Creates a sample Self Description based on provided Claims.
+      summary: This endpoint is deprecated, please use /federated-catalogue/upload-from-claims instead.
+      deprecated: true
+
+  /vp-from-claims:
+    post:
+      summary: Creates a sample Verifiable Presentation based on provided Claims.
       description: Issuer and Private Key used to create the Proof are configured on the server side.
       requestBody:
-        description: JSON-LD Claims to be placed inside the Verifiable Credential of the resulting Self Description.
+        description: JSON-LD Claims to be placed inside the Verifiable Credential of the resulting Verifiable Presentation.
         required: true
         content:
           application/json:
@@ -83,7 +88,7 @@ paths:
               }
       responses:
         "200": # status code
-          description: The created Self Description.
+          description: The created Verifiable Presentation.
           content:
             application/json:
               schema:
@@ -95,9 +100,14 @@ paths:
               schema:
                 type: object
 
-  /sd-from-vp-without-proof:
+  /self-description:
     post:
-      summary: Creates a Self Description (Verifiable Presentation having a proof) based on a provided Verifiable Presentation without a proof.
+      summary: This endpoint is deprecated, please use /vp-from-claims instead.
+      deprecated: true
+
+  /vp-from-vp-without-proof:
+    post:
+      summary: Creates a Verifiable Presentation having a proof based on a provided Verifiable Presentation without a proof.
       description: Issuer and Private Key used to create the Proof are configured on the server side.
       requestBody:
         description: Verifiable Presentation in JSON-LD format having no proof.
@@ -157,7 +167,7 @@ paths:
               }
       responses:
         "200": # status code
-          description: The created Self Description.
+          description: The created Verifiable Presentation.
           content:
             application/json:
               schema:
@@ -201,7 +211,7 @@ paths:
               }
       responses:
         "200": # status code
-          description: The created Self Description.
+          description: The created Verifiable Credential.
           content:
             application/json:
               schema:
@@ -213,12 +223,12 @@ paths:
               schema:
                 type: object
 
-  /sd-from-vcs:
+  /vp-from-vcs:
     post:
-      summary: Creates a Verifiable Presentation/Self Description based on a provided list of Verifiable Credentials.
+      summary: Creates a Verifiable Presentation based on a provided list of Verifiable Credentials.
       description: Issuer and Private Key used to create the Proof are configured on the server side.
       requestBody:
-        description: List of Verifiable Credentials to be placed inside the Verifiable Presentation/Self Description.
+        description: List of Verifiable Credentials to be placed inside the Verifiable Presentation.
         required: true
         content:
           application/json:
@@ -305,7 +315,7 @@ paths:
               ]
       responses:
         "200": # status code
-          description: The created Self Description.
+          description: The created Verifiable Presentation.
           content:
             application/json:
               schema:
