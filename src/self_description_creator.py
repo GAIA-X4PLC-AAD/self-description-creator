@@ -4,7 +4,7 @@ import time
 from logging.config import dictConfig
 from threading import Thread
 
-from flask import Flask, request
+from flask import Flask, redirect, request
 from jwcrypto import jwk
 from jwcrypto.jwk import JWK
 
@@ -121,8 +121,14 @@ def health():
     return data, 200
 
 
+# This endpoint is deprecated, use /vp-from-claims instead
 @app.route("/self-description", methods=["POST"])
 def post_self_description():
+    return redirect(location="/vp-from-claims", code=308)
+    
+
+@app.route("/vp-from-claims", methods=["POST"])
+def create_vp_from_claims():
     try:
         claims = request.get_json()
         self_description = self_description_processor.create_self_description(claims=claims) # type: ignore
@@ -135,8 +141,14 @@ def post_self_description():
         return data, 500
 
 
+# This endpoint is deprecated, use /federated-catalogue/upload-from-claims instead
 @app.route("/federated-catalogue/self-descriptions", methods=["POST"])
 def post_self_description_to_federated_catalogue():
+    return redirect(location="/federated-catalogue/upload-from-claims", code=308)
+
+    
+@app.route("/federated-catalogue/upload-from-claims", methods=["POST"])
+def post_claims_to_federated_catalogue():
     try:
         federated_catalogue_client = FederatedCatalogueClient(federated_catalogue_url=FEDERATED_CATALOGUE_URL,
                                                                 keycloak_server_url=KEYCLOAK_SERVER_URL,
@@ -155,8 +167,8 @@ def post_self_description_to_federated_catalogue():
         return data, 500
 
 
-@app.route("/sd-from-vp-without-proof", methods=["POST"])
-def create_sd_from_vp_without_proof():
+@app.route("/vp-from-vp-without-proof", methods=["POST"])
+def create_vp_from_vp_without_proof():
     try:
         vp_without_proof = request.get_json()
         self_description = self_description_processor._add_proof(credential=vp_without_proof) # type: ignore
@@ -183,8 +195,8 @@ def create_vc_from_claims():
         return data, 500
 
 
-@app.route("/sd-from-vcs", methods=["POST"])
-def create_sd_from_vcs():
+@app.route("/vp-from-vcs", methods=["POST"])
+def create_vp_from_vcs():
     try:
         vcs = request.get_json()
         self_description = self_description_processor.create_verifiable_presentation(verifiable_credentials=vcs) # type: ignore

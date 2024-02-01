@@ -13,7 +13,6 @@ class SelfDescriptionProcessor:
 
     def __init__(self, credential_issuer: str, signature_jwk: JWK, use_legacy_catalogue_signature: bool):
         """
-
         :param credential_issuer:
         :param signature_jwk:
         """
