@@ -5,7 +5,7 @@ import yaml
 from logging.config import dictConfig
 from threading import Thread
 
-from flask import Flask, redirect, request, jsonify
+from flask import Flask, redirect, Request, request
 from flasgger import Swagger
 from jwcrypto import jwk
 from jwcrypto.jwk import JWK
@@ -31,7 +31,7 @@ CLAIM_FILES_CLEANUP_MAX_FILE_AGE_DAYS = os.environ.get("CLAIM_FILES_CLEANUP_MAX_
 OPERATING_MODE = os.environ.get("OPERATING_MODE", default="API")  # Can be either API | HYBRID
 
 # Variable will be initialized in method init_app() on application startup
-signature_jwk: JWK = None # type: ignore
+signature_jwk: JWK | None = None
 
 
 def read_signature_private_key() -> JWK:
@@ -80,9 +80,6 @@ def init_app():
     Swagger(app, template=openapi_spec)
     app.logger.info("Initializing app")
 
-
-
-
     # Flask-internal logger has been disabled since it logs every request by default which pollutes the log output
     # (especially when receiving health requests in k8s environments) -> could potentially be optimized
     global signature_jwk, self_description_processor
@@ -97,7 +94,6 @@ def init_app():
         app.logger.info("Signing key has been successfully configured")
         app.logger.info("Initialization has been finished")
         return app
-
 
 app = init_app()
 self_description_processor = SelfDescriptionProcessor(credential_issuer=CREDENTIAL_ISSUER,
@@ -124,6 +120,12 @@ def background_task():
         claim_file_handler.cleanup_old_files()
         time.sleep(CLAIM_FILES_POLL_INTERVAL_SEC)
 
+def get_json_request_body(request: Request):
+    body = request.get_json()
+    if body is None:
+        raise Exception("No proper request body found")
+    else:
+        return body
 
 @app.route("/health")
 def health():
@@ -141,9 +143,9 @@ def post_self_description():
 @app.route("/vp-from-claims", methods=["POST"])
 def create_vp_from_claims():
     try:
-        claims = request.get_json()
-        self_description = self_description_processor.create_self_description(claims=claims) # type: ignore
-        return self_description, 200
+        claims = get_json_request_body(request)
+        verifiable_presentation = self_description_processor.create_self_description(claims=claims) 
+        return verifiable_presentation, 200
     except Exception as e:
         error_msg = "An error occurred while processing the request [error: {error_details}]".format(
             error_details=e.args)
@@ -166,9 +168,9 @@ def post_claims_to_federated_catalogue():
                                                                 federated_catalogue_user_name=FEDERATED_CATALOGUE_USER_NAME,
                                                                 federated_catalogue_user_password=FEDERATED_CATALOGUE_USER_PASSWORD,
                                                                 keycloak_client_secret=KEYCLOAK_CLIENT_SECRET)
-        claims = request.get_json()
-        self_description = self_description_processor.create_self_description(claims=claims) # type: ignore
-        federated_catalogue_client.send_to_federated_catalogue(self_description)
+        claims = get_json_request_body(request)
+        verifiable_presentation = self_description_processor.create_self_description(claims=claims)
+        federated_catalogue_client.send_to_federated_catalogue(verifiable_presentation)
         data = {"status": "success"}
         return data, 201
     except Exception as e:
@@ -181,9 +183,9 @@ def post_claims_to_federated_catalogue():
 @app.route("/vp-from-vp-without-proof", methods=["POST"])
 def create_vp_from_vp_without_proof():
     try:
-        vp_without_proof = request.get_json()
-        self_description = self_description_processor._add_proof(credential=vp_without_proof) # type: ignore
-        return self_description, 200
+        vp_without_proof = get_json_request_body(request)
+        verifiable_presentation = self_description_processor._add_proof(credential=vp_without_proof)
+        return verifiable_presentation, 200
     except Exception as e:
         error_msg = "An error occurred while processing the request [error: {error_details}]".format(
             error_details=e.args)
@@ -195,9 +197,9 @@ def create_vp_from_vp_without_proof():
 @app.route("/vc-from-claims", methods=["POST"])
 def create_vc_from_claims():
     try:
-        claims = request.get_json()
-        self_description = self_description_processor.create_verifiable_credential(claims=claims) # type: ignore
-        return self_description, 200
+        claims = get_json_request_body(request)
+        verifiable_presentation = self_description_processor.create_verifiable_credential(claims=claims)
+        return verifiable_presentation, 200
     except Exception as e:
         error_msg = "An error occurred while processing the request [error: {error_details}]".format(
             error_details=e.args)
@@ -209,9 +211,9 @@ def create_vc_from_claims():
 @app.route("/vp-from-vcs", methods=["POST"])
 def create_vp_from_vcs():
     try:
-        vcs = request.get_json()
-        self_description = self_description_processor.create_verifiable_presentation(verifiable_credentials=vcs) # type: ignore
-        return self_description, 200
+        verifiable_credential_list = get_json_request_body(request)
+        verifiable_presentation = self_description_processor.create_verifiable_presentation(verifiable_credentials=verifiable_credential_list) 
+        return verifiable_presentation, 200
     except Exception as e:
         error_msg = "An error occurred while processing the request [error: {error_details}]".format(
             error_details=e.args)
