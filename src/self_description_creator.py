@@ -184,7 +184,7 @@ def post_claims_to_federated_catalogue():
 def create_vp_from_vp_without_proof():
     try:
         vp_without_proof = get_json_request_body(request)
-        verifiable_presentation = self_description_processor._add_proof(credential=vp_without_proof)
+        verifiable_presentation = self_description_processor.add_proof(credential=vp_without_proof)
         return verifiable_presentation, 200
     except Exception as e:
         error_msg = "An error occurred while processing the request [error: {error_details}]".format(

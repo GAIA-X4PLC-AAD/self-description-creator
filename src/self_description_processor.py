@@ -50,7 +50,7 @@ class SelfDescriptionProcessor:
             "expirationDate": expiration_date.isoformat() + "Z",
             "credentialSubject": claims}
         credential["credentialSubject"].update(claims)
-        vc = self._add_proof(credential)
+        vc = self.add_proof(credential)
         return vc
 
     def create_verifiable_presentation(self, verifiable_credentials: list) -> dict:
@@ -68,10 +68,10 @@ class SelfDescriptionProcessor:
             "holder": holder,
             "verifiableCredential": verifiable_credentials
         }
-        vp = self._add_proof(presentation)
+        vp = self.add_proof(presentation)
         return vp
 
-    def _add_proof(self, credential: dict) -> dict:
+    def add_proof(self, credential: dict) -> dict:
         """
         Add a Proof to given Credential.
         :param credential: The credential where a Proof will be added to
