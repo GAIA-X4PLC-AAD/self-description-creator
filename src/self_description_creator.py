@@ -97,8 +97,8 @@ def init_app():
 
 app = init_app()
 self_description_processor = SelfDescriptionProcessor(credential_issuer=CREDENTIAL_ISSUER,
-                                                      signature_jwk=signature_jwk,
-                                                      use_legacy_catalogue_signature=USE_LEGACY_CATALOGUE_SIGNATURE)
+                                                            signature_jwk=signature_jwk, # type: ignore needed for linting, type error would indicate that signature_jwk could ne None, but in init_app() we check, if signature_jwk is None.
+                                                            use_legacy_catalogue_signature=USE_LEGACY_CATALOGUE_SIGNATURE) 
 
 
 def background_task():
