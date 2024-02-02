@@ -1,10 +1,12 @@
 import logging
 import os
 import time
+import yaml
 from logging.config import dictConfig
 from threading import Thread
 
-from flask import Flask, redirect, request
+from flask import Flask, redirect, request, jsonify
+from flasgger import Swagger
 from jwcrypto import jwk
 from jwcrypto.jwk import JWK
 
@@ -71,7 +73,15 @@ def init_app():
 
     logging.getLogger("werkzeug").addFilter(HealthCheckFilter())
     app = Flask(__name__)
+    
+    openapi_spec=""
+    with open(os.path.join("openapi-spec.yaml"), 'r') as file:
+        openapi_spec = yaml.safe_load(file)
+    Swagger(app, template=openapi_spec)
     app.logger.info("Initializing app")
+
+
+
 
     # Flask-internal logger has been disabled since it logs every request by default which pollutes the log output
     # (especially when receiving health requests in k8s environments) -> could potentially be optimized
@@ -119,6 +129,7 @@ def background_task():
 def health():
     data = {"status": "success"}
     return data, 200
+
 
 
 # This endpoint is deprecated, use /vp-from-claims instead
