@@ -16,26 +16,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-            example:
-              {
-                "id": "https://gaia-x.eu/.well-known/service1.json",
-                "type": "gx:ServiceOffering",
-                "gx:providedBy":
-                  { "id": "https://gaia-x.eu/.well-known/participant.json" },
-                "gx:policy": "",
-                "gx:termsAndConditions":
-                  {
-                    "gx:URL": "http://termsandconds.com",
-                    "gx:hash": "d8402a23de560f5ab34b22d1a142feb9e13b3143",
-                  },
-                "gx:dataAccountExport":
-                  {
-                    "gx:requestType": "API",
-                    "gx:accessType": "digital",
-                    "gx:formatType": "application/json",
-                  },
-              }
+              $ref: '#/components/schemas/ServiceOfferingClaims'
       responses:
         "201": # status code
           description: In case the Verifiable Presentation has been created and successfully added to the configured GXFS Federated Catalogue instance.
@@ -55,6 +36,9 @@ paths:
     post:
       summary: This endpoint is deprecated, please use /federated-catalogue/upload-from-claims instead.
       deprecated: true
+      responses:
+        "308": # status code
+          description: Permanent forwarding to /federated-catalogue/upload-from-claims
 
   /vp-from-claims:
     post:
@@ -66,26 +50,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-            example:
-              {
-                "id": "https://gaia-x.eu/.well-known/service1.json",
-                "type": "gx:ServiceOffering",
-                "gx:providedBy":
-                  { "id": "https://gaia-x.eu/.well-known/participant.json" },
-                "gx:policy": "",
-                "gx:termsAndConditions":
-                  {
-                    "gx:URL": "http://termsandconds.com",
-                    "gx:hash": "d8402a23de560f5ab34b22d1a142feb9e13b3143",
-                  },
-                "gx:dataAccountExport":
-                  {
-                    "gx:requestType": "API",
-                    "gx:accessType": "digital",
-                    "gx:formatType": "application/json",
-                  },
-              }
+              $ref: '#/components/schemas/ServiceOfferingClaims'
       responses:
         "200": # status code
           description: The created Verifiable Presentation.
@@ -104,6 +69,9 @@ paths:
     post:
       summary: This endpoint is deprecated, please use /vp-from-claims instead.
       deprecated: true
+      responses:
+        "308": # status code
+          description: Permanent forwarding to /federated-catalogue/upload-from-claims
 
   /vp-from-vp-without-proof:
     post:
@@ -189,26 +157,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-            example:
-              {
-                "id": "https://gaia-x.eu/.well-known/service1.json",
-                "type": "gx:ServiceOffering",
-                "gx:providedBy":
-                  { "id": "https://gaia-x.eu/.well-known/participant.json" },
-                "gx:policy": "",
-                "gx:termsAndConditions":
-                  {
-                    "gx:URL": "http://termsandconds.com",
-                    "gx:hash": "d8402a23de560f5ab34b22d1a142feb9e13b3143",
-                  },
-                "gx:dataAccountExport":
-                  {
-                    "gx:requestType": "API",
-                    "gx:accessType": "digital",
-                    "gx:formatType": "application/json",
-                  },
-              }
+              $ref: '#/components/schemas/ServiceOfferingClaims'
       responses:
         "200": # status code
           description: The created Verifiable Credential.
@@ -326,3 +275,65 @@ paths:
             application/json:
               schema:
                 type: object
+components:
+  schemas:
+    ServiceOfferingClaims:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uri
+          description: The identifier of the service offering.
+          example: "https://gaia-x.eu/.well-known/service1.json"
+        type:
+          type: string
+          description: The type of service offering.
+          example: "gx:ServiceOffering"
+        providedBy:
+          $ref: "#/components/schemas/Participant"
+        policy:
+          type: string
+          description: The policy associated with the service offering.
+          example: ""
+        termsAndConditions:
+          $ref: "#/components/schemas/TermsAndConditions"
+        dataAccountExport:
+          $ref: "#/components/schemas/DataAccountExport"
+
+    Participant:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uri
+          description: The identifier of the participant.
+          example: "https://gaia-x.eu/.well-known/participant.json"
+          
+    TermsAndConditions:
+      type: object
+      properties:
+        URL:
+          type: string
+          format: uri
+          description: The URL to the terms and conditions.
+          example: "http://termsandconds.com"
+        hash:
+          type: string
+          description: The hash value of the terms and conditions.
+          example: "d8402a23de560f5ab34b22d1a142feb9e13b3143"
+          
+    DataAccountExport:
+      type: object
+      properties:
+        requestType:
+          type: string
+          description: The type of request for data account export.
+          example: "API"
+        accessType:
+          type: string
+          description: The type of access for data account export.
+          example: "digital"
+        formatType:
+          type: string
+          description: The format type for data account export.
+          example: "application/json"

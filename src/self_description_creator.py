@@ -6,7 +6,8 @@ from logging.config import dictConfig
 from threading import Thread
 
 from flask import Flask, redirect, Request, request
-from flasgger import Swagger
+from flasgger import Swagger, swag_from
+from flask_restful import Api, Resource
 from jwcrypto import jwk
 from jwcrypto.jwk import JWK
 
@@ -74,10 +75,10 @@ def init_app():
     logging.getLogger("werkzeug").addFilter(HealthCheckFilter())
     app = Flask(__name__)
     
-    openapi_spec=""
-    with open(os.path.join("openapi-spec.yaml"), 'r') as file:
-        openapi_spec = yaml.safe_load(file)
-    Swagger(app, template=openapi_spec)
+    # openapi_spec=""
+    # with open(os.path.join("openapi-spec.yaml"), 'r') as file:
+    #     openapi_spec = yaml.safe_load(file)
+    Swagger(app, template_file='../openapi-spec.yaml', parse=True, merge=True)
     app.logger.info("Initializing app")
 
     # Flask-internal logger has been disabled since it logs every request by default which pollutes the log output
@@ -97,8 +98,8 @@ def init_app():
 
 app = init_app()
 self_description_processor = SelfDescriptionProcessor(credential_issuer=CREDENTIAL_ISSUER,
-                                                            signature_jwk=signature_jwk, # type: ignore needed for linting, type error would indicate that signature_jwk could ne None, but in init_app() we check, if signature_jwk is None.
-                                                            use_legacy_catalogue_signature=USE_LEGACY_CATALOGUE_SIGNATURE) 
+                                                        signature_jwk=signature_jwk, # type: ignore needed for linting, type error would indicate that signature_jwk could ne None, but in init_app() we check, if signature_jwk is None.
+                                                        use_legacy_catalogue_signature=USE_LEGACY_CATALOGUE_SIGNATURE) 
 
 
 def background_task():
