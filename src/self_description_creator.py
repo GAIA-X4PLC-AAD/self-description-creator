@@ -1,4 +1,4 @@
-from __future__ import annotations # used for linting (type annotations)
+from __future__ import annotations  # used for linting (type annotations)
 
 import logging
 import os
@@ -10,31 +10,39 @@ from flask import Flask, request
 from jwcrypto import jwk
 from jwcrypto.jwk import JWK
 
-from claim_file_handler import ClaimFileHandler
-from federated_catalogue_client import FederatedCatalogueClient
-from self_description_processor import SelfDescriptionProcessor
-from did_store import DIDStore
+from src.claim_file_handler import ClaimFileHandler
+from src.federated_catalogue_client import FederatedCatalogueClient
+from src.self_description_processor import SelfDescriptionProcessor
+from src.did_store import DIDStore
 
 # -- Environment variables --
 KEYCLOAK_SERVER_URL = os.environ.get("KEYCLOAK_SERVER_URL", default="")
-FEDERATED_CATALOGUE_USER_NAME = os.environ.get("FEDERATED_CATALOGUE_USER_NAME", default="")
-FEDERATED_CATALOGUE_USER_PASSWORD = os.environ.get("FEDERATED_CATALOGUE_USER_PASSWORD", default="")
-USE_LEGACY_CATALOGUE_SIGNATURE = os.environ.get("USE_LEGACY_CATALOGUE_SIGNATURE", default="").lower() in ("true", "1")
+FEDERATED_CATALOGUE_USER_NAME = os.environ.get(
+    "FEDERATED_CATALOGUE_USER_NAME", default="")
+FEDERATED_CATALOGUE_USER_PASSWORD = os.environ.get(
+    "FEDERATED_CATALOGUE_USER_PASSWORD", default="")
+USE_LEGACY_CATALOGUE_SIGNATURE = os.environ.get(
+    "USE_LEGACY_CATALOGUE_SIGNATURE", default="").lower() in ("true", "1")
 KEYCLOAK_CLIENT_SECRET = os.environ.get("KEYCLOAK_CLIENT_SECRET", default="")
 FEDERATED_CATALOGUE_URL = os.environ.get("FEDERATED_CATALOGUE_URL", default="")
 CREDENTIAL_ISSUER = os.environ.get("CREDENTIAL_ISSUER", default="")
-CREDENTIAL_ISSUER_PRIVATE_KEY_PEM_PATH = os.environ.get("CREDENTIAL_ISSUER_PRIVATE_KEY_PEM_PATH", default="")
-CLAIM_FILES_DIR = os.environ.get("CLAIM_FILES_DIR", default=os.path.join("..", "data"))
-CLAIM_FILES_POLL_INTERVAL_SEC = float(os.environ.get("CLAIM_FILES_POLL_INTERVAL_SEC", default=2.0))
-CLAIM_FILES_CLEANUP_MAX_FILE_AGE_DAYS = os.environ.get("CLAIM_FILES_CLEANUP_MAX_FILE_AGE_DAYS", default=1)
+CREDENTIAL_ISSUER_PRIVATE_KEY_PEM_PATH = os.environ.get(
+    "CREDENTIAL_ISSUER_PRIVATE_KEY_PEM_PATH", default="")
+CLAIM_FILES_DIR = os.environ.get(
+    "CLAIM_FILES_DIR", default=os.path.join("..", "data"))
+CLAIM_FILES_POLL_INTERVAL_SEC = float(os.environ.get(
+    "CLAIM_FILES_POLL_INTERVAL_SEC", default=2.0))
+CLAIM_FILES_CLEANUP_MAX_FILE_AGE_DAYS = os.environ.get(
+    "CLAIM_FILES_CLEANUP_MAX_FILE_AGE_DAYS", default=1)
 DID_STORAGE_TYPE = os.environ.get("DID_STORAGE_TYPE", default="None")
 DID_STORAGE_PATH = os.environ.get("DID_STORAGE_PATH", default="")
 
 # -- Global variables --
-OPERATING_MODE = os.environ.get("OPERATING_MODE", default="API")  # Can be either API | HYBRID
+OPERATING_MODE = os.environ.get(
+    "OPERATING_MODE", default="API")  # Can be either API | HYBRID
 
 # Variable will be initialized in method init_app() on application startup
-signature_jwk: JWK = None # type: ignore
+signature_jwk: JWK = None  # type: ignore
 
 
 def read_signature_private_key() -> JWK:
@@ -86,7 +94,8 @@ def init_app():
         app.logger.info("Read signing key")
         signature_jwk = read_signature_private_key()
         if signature_jwk is None:
-            app.logger.error("An error occurred while initializing JWK for signatures")
+            app.logger.error(
+                "An error occurred while initializing JWK for signatures")
             exit(-1)
 
         app.logger.info("Signing key has been successfully configured")
@@ -96,11 +105,13 @@ def init_app():
 
 app = init_app()
 
-did_store = DIDStore(storage_path=DID_STORAGE_PATH, storage_type=DID_STORAGE_TYPE)
+did_store = DIDStore(storage_path=DID_STORAGE_PATH,
+                     storage_type=DID_STORAGE_TYPE)
 self_description_processor = SelfDescriptionProcessor(credential_issuer=CREDENTIAL_ISSUER,
-                                                    signature_jwk=signature_jwk,
-                                                    use_legacy_catalogue_signature=USE_LEGACY_CATALOGUE_SIGNATURE,
-                                                    did_store=did_store)
+                                                      signature_jwk=signature_jwk,
+                                                      use_legacy_catalogue_signature=USE_LEGACY_CATALOGUE_SIGNATURE,
+                                                      did_store=did_store)
+
 
 def background_task():
     """
@@ -132,7 +143,8 @@ def health():
 def post_self_description():
     try:
         claims = request.get_json()
-        self_description = self_description_processor.create_self_description(claims=claims) # type: ignore
+        self_description = self_description_processor.create_self_description(
+            claims=claims)  # type: ignore
         return self_description, 200
     except Exception as e:
         error_msg = "An error occurred while processing the request [error: {error_details}]".format(
@@ -146,17 +158,20 @@ def post_self_description():
 def post_self_description_to_federated_catalogue():
     try:
         federated_catalogue_client = FederatedCatalogueClient(federated_catalogue_url=FEDERATED_CATALOGUE_URL,
-                                                                keycloak_server_url=KEYCLOAK_SERVER_URL,
-                                                                federated_catalogue_user_name=FEDERATED_CATALOGUE_USER_NAME,
-                                                                federated_catalogue_user_password=FEDERATED_CATALOGUE_USER_PASSWORD,
-                                                                keycloak_client_secret=KEYCLOAK_CLIENT_SECRET)
+                                                              keycloak_server_url=KEYCLOAK_SERVER_URL,
+                                                              federated_catalogue_user_name=FEDERATED_CATALOGUE_USER_NAME,
+                                                              federated_catalogue_user_password=FEDERATED_CATALOGUE_USER_PASSWORD,
+                                                              keycloak_client_secret=KEYCLOAK_CLIENT_SECRET)
         claims = request.get_json()
-        self_description = self_description_processor.create_self_description(claims=claims) # type: ignore
-        federated_catalogue_client.send_to_federated_catalogue(self_description)
+        self_description = self_description_processor.create_self_description(
+            claims=claims)  # type: ignore
+        federated_catalogue_client.send_to_federated_catalogue(
+            self_description)
         data = {"status": "success"}
         return data, 201
     except Exception as e:
-        error_msg = "An error occurred while processing the request [error: {body}]".format(body=e.args)
+        error_msg = "An error occurred while processing the request [error: {body}]".format(
+            body=e.args)
         app.logger.warning(error_msg)
         data = {"status": "failed", "error": error_msg}
         return data, 500
@@ -166,7 +181,8 @@ def post_self_description_to_federated_catalogue():
 def create_sd_from_vp_without_proof():
     try:
         vp_without_proof = request.get_json()
-        self_description = self_description_processor._add_proof(credential=vp_without_proof) # type: ignore
+        self_description = self_description_processor._add_proof(
+            credential=vp_without_proof)  # type: ignore
         return self_description, 200
     except Exception as e:
         error_msg = "An error occurred while processing the request [error: {error_details}]".format(
@@ -180,7 +196,8 @@ def create_sd_from_vp_without_proof():
 def create_vc_from_claims():
     try:
         claims = request.get_json()
-        self_description = self_description_processor.create_verifiable_credential(claims=claims) # type: ignore
+        self_description = self_description_processor.create_verifiable_credential(
+            claims=claims)  # type: ignore
         return self_description, 200
     except Exception as e:
         error_msg = "An error occurred while processing the request [error: {error_details}]".format(
@@ -194,7 +211,8 @@ def create_vc_from_claims():
 def create_sd_from_vcs():
     try:
         vcs = request.get_json()
-        self_description = self_description_processor.create_verifiable_presentation(verifiable_credentials=vcs) # type: ignore
+        self_description = self_description_processor.create_verifiable_presentation(
+            verifiable_credentials=vcs)  # type: ignore
         return self_description, 200
     except Exception as e:
         error_msg = "An error occurred while processing the request [error: {error_details}]".format(
@@ -202,31 +220,30 @@ def create_sd_from_vcs():
         app.logger.warning(error_msg)
         data = {"status": "failed", "error": error_msg}
         return data, 500
-    
 
-@app.route("/id-documents", methods=["GET", "POST"]) 
-def return_id_documents():
+
+@app.route("/id-documents", methods=["GET"])
+# -> tuple[str, Literal[200]] | tuple[dict[str, str], Literal[...:
+def get_id_documents():
     try:
-        if request.method == "POST":
-            request_body = request.get_json()
-            if request_body is not None:
-                did_document = did_store.get_saved_object(request_body["uuid"])
-                return did_document, 200
-            else:
-                return {"status": "failed", "error": "No proper ID provided"}, 500
-        elif request.method == "GET": 
-            data = {}
-            for did_object in did_store.get_saved_objects():
-                data[did_object.get_uuid()] = did_object.get_object_content()
-            return data, 200
-        else: raise Exception("An unsupported http-method has been used")
+        request_uuid = request.args.get("uuid")
+        if request_uuid is not None:
+            did_document = did_store.get_saved_object(request_uuid)
+            return did_document, 200
+        data = []
+        cnt = 0
+        for uuid in did_store.get_saved_uuids():
+            if cnt < 500:
+                data.append(uuid)
+                cnt += 1
+        return data, 200
     except Exception as e:
         error_msg = "An error occurred while processing the request [error: {error_details}]".format(
             error_details=e.args)
         app.logger.warning(error_msg)
         data = {"status": "failed", "error": error_msg}
         return data, 500
-    
+
 
 if __name__ == "__main__":
     # The file-based SD creation runs in the background to be able to serve the API and create SDs from files

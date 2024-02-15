@@ -336,34 +336,16 @@ paths:
                 type: object
 
   /id-documents:
-    post:
-      summary: Returns the object that is saved in the did_storage of the application having the specified UUID.
-      description: Gets a UUID in the request body as a JSON Object and filters the storage for an object having that UUID.
-      requestBody:
-        description: JSON Object having "UUID" as the key and the regarding UUID as a value.
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-            example:
-              {"uuid":"7b02442f5249480fb89fccbbe62acf7f"}
-      responses:
-        '200': # status code
-          description: The requested document.
-          content:
-            application/json:
-              schema:
-                type: object
-        '500': # status code
-          description: In case an error occurred.
-          content:
-            application/json:
-              schema:
-                type: object
     get:
-      summary: Returns all objects that have been saved in the did_storage of the application.
-      description: Returns all saved objects in the did_storage as a list.
+      summary: Returns all UUIDs (max. 500) of the objects that have been saved in the did_storage of the application.
+      description: Returns all saved UUIDs (max. 500) in the did_storage as a list. 
+      parameters:
+        - in: query
+          name: uuid
+          required: false
+          schema:
+            type: str
+          description: Provide a UUID to get the content of the regarding object.
       responses:
         '200': # status code
           description: The requested documents.
