@@ -1,10 +1,13 @@
 import logging
 import os
 import time
+import yaml
 from logging.config import dictConfig
 from threading import Thread
 
-from flask import Flask, request
+from flask import Flask, redirect, Request, request
+from flasgger import Swagger, swag_from
+from flask_restful import Api, Resource
 from jwcrypto import jwk
 from jwcrypto.jwk import JWK
 
@@ -19,17 +22,17 @@ FEDERATED_CATALOGUE_USER_PASSWORD = os.environ.get("FEDERATED_CATALOGUE_USER_PAS
 USE_LEGACY_CATALOGUE_SIGNATURE = os.environ.get("USE_LEGACY_CATALOGUE_SIGNATURE", default="").lower() in ("true", "1")
 KEYCLOAK_CLIENT_SECRET = os.environ.get("KEYCLOAK_CLIENT_SECRET", default="")
 FEDERATED_CATALOGUE_URL = os.environ.get("FEDERATED_CATALOGUE_URL", default="")
-CREDENTIAL_ISSUER = os.environ.get("CREDENTIAL_ISSUER")
-CREDENTIAL_ISSUER_PRIVATE_KEY_PEM_PATH = os.environ.get("CREDENTIAL_ISSUER_PRIVATE_KEY_PEM_PATH")
+CREDENTIAL_ISSUER = os.environ.get("CREDENTIAL_ISSUER", default="")
+CREDENTIAL_ISSUER_PRIVATE_KEY_PEM_PATH = os.environ.get("CREDENTIAL_ISSUER_PRIVATE_KEY_PEM_PATH", default="")
 CLAIM_FILES_DIR = os.environ.get("CLAIM_FILES_DIR", default=os.path.join("..", "data"))
-CLAIM_FILES_POLL_INTERVAL_SEC = os.environ.get("CLAIM_FILES_POLL_INTERVAL_SEC", default=2.0)
+CLAIM_FILES_POLL_INTERVAL_SEC = float(os.environ.get("CLAIM_FILES_POLL_INTERVAL_SEC", default=2.0))
 CLAIM_FILES_CLEANUP_MAX_FILE_AGE_DAYS = os.environ.get("CLAIM_FILES_CLEANUP_MAX_FILE_AGE_DAYS", default=1)
 
 # -- Global variables --
 OPERATING_MODE = os.environ.get("OPERATING_MODE", default="API")  # Can be either API | HYBRID
 
 # Variable will be initialized in method init_app() on application startup
-signature_jwk: JWK = None
+signature_jwk: JWK | None = None
 
 
 def read_signature_private_key() -> JWK:
@@ -71,6 +74,11 @@ def init_app():
 
     logging.getLogger("werkzeug").addFilter(HealthCheckFilter())
     app = Flask(__name__)
+    
+    # openapi_spec=""
+    # with open(os.path.join("openapi-spec.yaml"), 'r') as file:
+    #     openapi_spec = yaml.safe_load(file)
+    Swagger(app, template_file='../openapi-spec.yaml', parse=True, merge=True)
     app.logger.info("Initializing app")
 
     # Flask-internal logger has been disabled since it logs every request by default which pollutes the log output
@@ -88,11 +96,10 @@ def init_app():
         app.logger.info("Initialization has been finished")
         return app
 
-
 app = init_app()
 self_description_processor = SelfDescriptionProcessor(credential_issuer=CREDENTIAL_ISSUER,
-                                                      signature_jwk=signature_jwk,
-                                                      use_legacy_catalogue_signature=USE_LEGACY_CATALOGUE_SIGNATURE)
+                                                        signature_jwk=signature_jwk, # type: ignore needed for linting, type error would indicate that signature_jwk could ne None, but in init_app() we check, if signature_jwk is None.
+                                                        use_legacy_catalogue_signature=USE_LEGACY_CATALOGUE_SIGNATURE) 
 
 
 def background_task():
@@ -114,6 +121,12 @@ def background_task():
         claim_file_handler.cleanup_old_files()
         time.sleep(CLAIM_FILES_POLL_INTERVAL_SEC)
 
+def get_json_request_body(request: Request):
+    body = request.get_json()
+    if body is None:
+        raise Exception("No proper request body found")
+    else:
+        return body
 
 @app.route("/health")
 def health():
@@ -121,41 +134,93 @@ def health():
     return data, 200
 
 
+
+# This endpoint is deprecated, use /vp-from-claims instead
 @app.route("/self-description", methods=["POST"])
 def post_self_description():
-    if request.method == "POST":
-        try:
-            claims = request.get_json()
-            self_description = self_description_processor.create_self_description(claims=claims)
-            return self_description, 200
-        except Exception as e:
-            error_msg = "An error occurred while processing the request [error: {error_details}]".format(
-                error_details=e.args)
-            app.logger.warning(error_msg)
-            data = {"status": "failed", "error": error_msg}
-            return data, 500
+    return redirect(location="/vp-from-claims", code=308)
+    
+
+@app.route("/vp-from-claims", methods=["POST"])
+def create_vp_from_claims():
+    try:
+        claims = get_json_request_body(request)
+        verifiable_presentation = self_description_processor.create_self_description(claims=claims) 
+        return verifiable_presentation, 200
+    except Exception as e:
+        error_msg = "An error occurred while processing the request [error: {error_details}]".format(
+            error_details=e.args)
+        app.logger.warning(error_msg)
+        data = {"status": "failed", "error": error_msg}
+        return data, 500
 
 
+# This endpoint is deprecated, use /federated-catalogue/upload-from-claims instead
 @app.route("/federated-catalogue/self-descriptions", methods=["POST"])
 def post_self_description_to_federated_catalogue():
-    if request.method == "POST":
-        try:
-            federated_catalogue_client = FederatedCatalogueClient(federated_catalogue_url=FEDERATED_CATALOGUE_URL,
-                                                                  keycloak_server_url=KEYCLOAK_SERVER_URL,
-                                                                  federated_catalogue_user_name=FEDERATED_CATALOGUE_USER_NAME,
-                                                                  federated_catalogue_user_password=FEDERATED_CATALOGUE_USER_PASSWORD,
-                                                                  keycloak_client_secret=KEYCLOAK_CLIENT_SECRET)
-            claims = request.get_json()
-            self_description = self_description_processor.create_self_description(claims=claims)
-            federated_catalogue_client.send_to_federated_catalogue(self_description)
-            data = {"status": "success"}
-            return data, 201
-        except Exception as e:
-            error_msg = "An error occurred while processing the request [error: {body}]".format(body=e.args)
-            app.logger.warning(error_msg)
-            data = {"status": "failed", "error": error_msg}
-            return data, 500
+    return redirect(location="/federated-catalogue/upload-from-claims", code=308)
 
+    
+@app.route("/federated-catalogue/upload-from-claims", methods=["POST"])
+def post_claims_to_federated_catalogue():
+    try:
+        federated_catalogue_client = FederatedCatalogueClient(federated_catalogue_url=FEDERATED_CATALOGUE_URL,
+                                                                keycloak_server_url=KEYCLOAK_SERVER_URL,
+                                                                federated_catalogue_user_name=FEDERATED_CATALOGUE_USER_NAME,
+                                                                federated_catalogue_user_password=FEDERATED_CATALOGUE_USER_PASSWORD,
+                                                                keycloak_client_secret=KEYCLOAK_CLIENT_SECRET)
+        claims = get_json_request_body(request)
+        verifiable_presentation = self_description_processor.create_self_description(claims=claims)
+        federated_catalogue_client.send_to_federated_catalogue(verifiable_presentation)
+        data = {"status": "success"}
+        return data, 201
+    except Exception as e:
+        error_msg = "An error occurred while processing the request [error: {body}]".format(body=e.args)
+        app.logger.warning(error_msg)
+        data = {"status": "failed", "error": error_msg}
+        return data, 500
+
+
+@app.route("/vp-from-vp-without-proof", methods=["POST"])
+def create_vp_from_vp_without_proof():
+    try:
+        vp_without_proof = get_json_request_body(request)
+        verifiable_presentation = self_description_processor.add_proof(credential=vp_without_proof)
+        return verifiable_presentation, 200
+    except Exception as e:
+        error_msg = "An error occurred while processing the request [error: {error_details}]".format(
+            error_details=e.args)
+        app.logger.warning(error_msg)
+        data = {"status": "failed", "error": error_msg}
+        return data, 500
+
+
+@app.route("/vc-from-claims", methods=["POST"])
+def create_vc_from_claims():
+    try:
+        claims = get_json_request_body(request)
+        verifiable_presentation = self_description_processor.create_verifiable_credential(claims=claims)
+        return verifiable_presentation, 200
+    except Exception as e:
+        error_msg = "An error occurred while processing the request [error: {error_details}]".format(
+            error_details=e.args)
+        app.logger.warning(error_msg)
+        data = {"status": "failed", "error": error_msg}
+        return data, 500
+
+
+@app.route("/vp-from-vcs", methods=["POST"])
+def create_vp_from_vcs():
+    try:
+        verifiable_credential_list = get_json_request_body(request)
+        verifiable_presentation = self_description_processor.create_verifiable_presentation(verifiable_credentials=verifiable_credential_list) 
+        return verifiable_presentation, 200
+    except Exception as e:
+        error_msg = "An error occurred while processing the request [error: {error_details}]".format(
+            error_details=e.args)
+        app.logger.warning(error_msg)
+        data = {"status": "failed", "error": error_msg}
+        return data, 500
 
 if __name__ == "__main__":
     # The file-based SD creation runs in the background to be able to serve the API and create SDs from files

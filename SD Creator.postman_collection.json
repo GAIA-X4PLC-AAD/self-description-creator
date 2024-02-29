@@ -1,12 +1,13 @@
 {
 	"info": {
-		"_postman_id": "19d2a701-9729-4cbc-91cf-6e0e71b5878d",
+		"_postman_id": "1cc0f9c7-77f8-4896-b4ac-6a83b7b05f3a",
 		"name": "SD Creator",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29915051"
 	},
 	"item": [
 		{
-			"name": "Add Self Description to GXFS Federated Catalogue",
+			"name": "Add Verifiable Presentation to GXFS Federated Catalogue",
 			"request": {
 				"method": "POST",
 				"header": [],
@@ -20,27 +21,27 @@
 					}
 				},
 				"url": {
-					"raw": "{{sd_creator_protocol}}://{{sd_creator_address}}/federated-catalogue/self-descriptions",
+					"raw": "{{sd_creator_protocol}}://{{sd_creator_address}}/federated-catalogue/upload-from-claims",
 					"protocol": "{{sd_creator_protocol}}",
 					"host": [
 						"{{sd_creator_address}}"
 					],
 					"path": [
 						"federated-catalogue",
-						"self-descriptions"
+						"upload-from-claims"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Create Self Description",
+			"name": "Create Verifiable Presentation from Claims",
 			"request": {
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "<place_claims_here><place_JSON_claims_here>",
+					"raw": "<place_JSON_claims_here>",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -48,13 +49,139 @@
 					}
 				},
 				"url": {
-					"raw": "{{sd_creator_protocol}}://{{sd_creator_address}}/self-description",
+					"raw": "{{sd_creator_protocol}}://{{sd_creator_address}}/vp-from-claims",
 					"protocol": "{{sd_creator_protocol}}",
 					"host": [
 						"{{sd_creator_address}}"
 					],
 					"path": [
-						"self-description"
+						"vp-from-claims"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Proof to Verifiable Presentation without Proof",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "<place_JSON_VP_without_proof_here>",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{sd_creator_protocol}}://{{sd_creator_address}}/vp-from-vp-without-proof",
+					"protocol": "{{sd_creator_protocol}}",
+					"host": [
+						"{{sd_creator_address}}"
+					],
+					"path": [
+						"vp-from-vp-without-proof"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Verifiable Credential from Claims",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "<place_JSON_claims_here>",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{sd_creator_protocol}}://{{sd_creator_address}}/vc-from-claims",
+					"protocol": "{{sd_creator_protocol}}",
+					"host": [
+						"{{sd_creator_address}}"
+					],
+					"path": [
+						"vc-from-claims"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Verifiable Presentation from Verfiable Credentials",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "<place_JSON_VC_list_here> (format: [VC1,VC2])",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{sd_creator_protocol}}://{{sd_creator_address}}/vp-from-vcs",
+					"protocol": "{{sd_creator_protocol}}",
+					"host": [
+						"{{sd_creator_address}}"
+					],
+					"path": [
+						"vp-from-vcs"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get ID_Documents",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{sd_creator_protocol}}://{{sd_creator_address}}/id-documents",
+					"protocol": "{{sd_creator_protocol}}",
+					"host": [
+						"{{sd_creator_address}}"
+					],
+					"path": [
+						"id-documents"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get ID_Document via UUID Copy",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"uuid\":\"<place_UUID_here>\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{sd_creator_protocol}}://{{sd_creator_address}}/id-documents",
+					"protocol": "{{sd_creator_protocol}}",
+					"host": [
+						"{{sd_creator_address}}"
+					],
+					"path": [
+						"id-documents"
 					]
 				}
 			},

@@ -6,7 +6,6 @@ from jwcrypto.common import base64url_encode
 from jwcrypto.jwk import JWK
 from pyld import jsonld
 
-
 class SelfDescriptionProcessor:
     """
     Class can be used to create Self Descriptions from Claims provided as input.
@@ -14,7 +13,6 @@ class SelfDescriptionProcessor:
 
     def __init__(self, credential_issuer: str, signature_jwk: JWK, use_legacy_catalogue_signature: bool):
         """
-
         :param credential_issuer:
         :param signature_jwk:
         """
@@ -41,6 +39,7 @@ class SelfDescriptionProcessor:
         """
         issuance_date = datetime.utcnow().replace(microsecond=0)
         expiration_date = issuance_date + timedelta(weeks=24)
+
         credential = {
             "@context": [
                 "https://www.w3.org/2018/credentials/v1",
@@ -51,7 +50,7 @@ class SelfDescriptionProcessor:
             "expirationDate": expiration_date.isoformat() + "Z",
             "credentialSubject": claims}
         credential["credentialSubject"].update(claims)
-        vc = self._add_proof(credential)
+        vc = self.add_proof(credential)
         return vc
 
     def create_verifiable_presentation(self, verifiable_credentials: list) -> dict:
@@ -69,10 +68,10 @@ class SelfDescriptionProcessor:
             "holder": holder,
             "verifiableCredential": verifiable_credentials
         }
-        vp = self._add_proof(presentation)
+        vp = self.add_proof(presentation)
         return vp
 
-    def _add_proof(self, credential: dict) -> dict:
+    def add_proof(self, credential: dict) -> dict:
         """
         Add a Proof to given Credential.
         :param credential: The credential where a Proof will be added to
@@ -110,7 +109,7 @@ class SelfDescriptionProcessor:
         canonical_credential = jsonld.normalize(credential, options=normalization_options)
         hashed_proof = sha256(canonical_proof.encode('utf-8')).hexdigest()
         hashed_credential = sha256(canonical_credential.encode('utf-8')).hexdigest()
-        
+
         hashed_signature_payload = hashed_credential
         if self.__use_legacy_catalogue_signature:
             hashed_signature_payload = bytes.fromhex(hashed_proof + hashed_credential)
