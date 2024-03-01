@@ -3,10 +3,13 @@ from __future__ import annotations  # used for linting (type annotations)
 import logging
 import os
 import time
+import yaml
 from logging.config import dictConfig
 from threading import Thread
 
-from flask import Flask, request
+from flask import Flask, redirect, Request, request
+from flasgger import Swagger, swag_from
+from flask_restful import Api, Resource
 from jwcrypto import jwk
 from jwcrypto.jwk import JWK
 
@@ -42,7 +45,7 @@ OPERATING_MODE = os.environ.get(
     "OPERATING_MODE", default="API")  # Can be either API | HYBRID
 
 # Variable will be initialized in method init_app() on application startup
-signature_jwk: JWK = None  # type: ignore
+signature_jwk: JWK | None = None
 
 
 def read_signature_private_key() -> JWK:
@@ -84,6 +87,11 @@ def init_app():
 
     logging.getLogger("werkzeug").addFilter(HealthCheckFilter())
     app = Flask(__name__)
+    
+    # openapi_spec=""
+    # with open(os.path.join("openapi-spec.yaml"), 'r') as file:
+    #     openapi_spec = yaml.safe_load(file)
+    Swagger(app, template_file='../openapi-spec.yaml', parse=True, merge=True)
     app.logger.info("Initializing app")
 
     # Flask-internal logger has been disabled since it logs every request by default which pollutes the log output
@@ -102,13 +110,12 @@ def init_app():
         app.logger.info("Initialization has been finished")
         return app
 
-
 app = init_app()
 
 did_store = DIDStore(storage_path=DID_STORAGE_PATH,
                      storage_type=DID_STORAGE_TYPE)
 self_description_processor = SelfDescriptionProcessor(credential_issuer=CREDENTIAL_ISSUER,
-                                                      signature_jwk=signature_jwk,
+                                                      signature_jwk=signature_jwk, # type: ignore needed for linting, type error would indicate that signature_jwk could ne None, but in init_app() we check, if signature_jwk is None.
                                                       use_legacy_catalogue_signature=USE_LEGACY_CATALOGUE_SIGNATURE,
                                                       did_store=did_store)
 
@@ -132,6 +139,20 @@ def background_task():
         claim_file_handler.cleanup_old_files()
         time.sleep(CLAIM_FILES_POLL_INTERVAL_SEC)
 
+def get_json_request_body(request: Request):
+    body = request.get_json()
+    if body is None:
+        raise Exception("No proper request body found")
+    else:
+        return body
+    
+def check_if_id_is_present(dictionary_to_check):
+    if "id" not in dictionary_to_check.keys():
+            app.logger.warning("No ID has been specified")
+            return False
+    return True
+    
+
 
 @app.route("/health")
 def health():
@@ -139,16 +160,21 @@ def health():
     return data, 200
 
 
+
+# This endpoint is deprecated, use /vp-from-claims instead
 @app.route("/self-description", methods=["POST"])
 def post_self_description():
+    return redirect(location="/vp-from-claims", code=308)
+
+
+@app.route("/vp-from-claims", methods=["POST"])
+def create_vp_from_claims():
     try:
-        if (payload := request.get_json()) is not None:
-            claims: dict = payload
-            check_if_id_is_present(claims)
-            self_description = self_description_processor.create_self_description(
-                claims=claims)  # type: ignore
-            return self_description, 200
-        raise Exception("Payload of POST Request is None")
+        claims: dict = get_json_request_body(request)
+        check_if_id_is_present(claims)
+        verifiable_presentation = self_description_processor.create_self_description(
+            claims=claims)  # type: ignore
+        return verifiable_presentation, 200
     except Exception as e:
         error_msg = "An error occurred while processing the request [error: {error_details}]".format(
             error_details=e.args)
@@ -157,24 +183,27 @@ def post_self_description():
         return data, 500
 
 
+# This endpoint is deprecated, use /federated-catalogue/upload-from-claims instead
 @app.route("/federated-catalogue/self-descriptions", methods=["POST"])
 def post_self_description_to_federated_catalogue():
+    return redirect(location="/federated-catalogue/upload-from-claims", code=308)
+
+@app.route("/federated-catalogue/upload-from-claims", methods=["POST"])
+def post_claims_to_federated_catalogue():
     try:
         federated_catalogue_client = FederatedCatalogueClient(federated_catalogue_url=FEDERATED_CATALOGUE_URL,
                                                               keycloak_server_url=KEYCLOAK_SERVER_URL,
                                                               federated_catalogue_user_name=FEDERATED_CATALOGUE_USER_NAME,
                                                               federated_catalogue_user_password=FEDERATED_CATALOGUE_USER_PASSWORD,
                                                               keycloak_client_secret=KEYCLOAK_CLIENT_SECRET)
-        if (payload := request.get_json()) is not None:
-            claims: dict = payload
-            check_if_id_is_present(claims)
-            self_description = self_description_processor.create_self_description(
-                claims=claims)  # type: ignore
-            federated_catalogue_client.send_to_federated_catalogue(
-                self_description)
-            data = {"status": "success"}
-            return data, 201
-        raise Exception("Payload of POST Request is None")
+        claims: dict = get_json_request_body(request)
+        check_if_id_is_present(claims)
+        self_description = self_description_processor.create_self_description(
+            claims=claims)  # type: ignore
+        federated_catalogue_client.send_to_federated_catalogue(
+            self_description)
+        data = {"status": "success"}
+        return data, 201
     except Exception as e:
         error_msg = "An error occurred while processing the request [error: {body}]".format(
             body=e.args)
@@ -182,17 +211,15 @@ def post_self_description_to_federated_catalogue():
         data = {"status": "failed", "error": error_msg}
         return data, 500
 
-
-@app.route("/sd-from-vp-without-proof", methods=["POST"])
-def create_sd_from_vp_without_proof():
+    
+@app.route("/vp-from-vp-without-proof", methods=["POST"])
+def create_vp_from_vp_without_proof():
     try:
-        if (payload := request.get_json()) is not None:
-            vp_without_proof: dict = payload
-            check_if_id_is_present(vp_without_proof)
-            self_description = self_description_processor._add_proof(
-                credential=vp_without_proof)  # type: ignore
-            return self_description, 200
-        raise Exception("Payload of POST Request is None")
+        vp_without_proof: dict = get_json_request_body(request)
+        check_if_id_is_present(vp_without_proof)
+        self_description = self_description_processor.add_proof(
+            credential=vp_without_proof)  # type: ignore
+        return self_description, 200
     except Exception as e:
         error_msg = "An error occurred while processing the request [error: {error_details}]".format(
             error_details=e.args)
@@ -204,13 +231,11 @@ def create_sd_from_vp_without_proof():
 @app.route("/vc-from-claims", methods=["POST"])
 def create_vc_from_claims():
     try:
-        if (payload := request.get_json()) is not None:
-            claims: dict = payload
-            check_if_id_is_present(claims)
-            self_description = self_description_processor.create_verifiable_credential(
-                claims=claims)  # type: ignore
-            return self_description, 200
-        raise Exception("Payload of POST Request is None")
+        claims: dict = get_json_request_body(request)
+        check_if_id_is_present(claims)
+        self_description = self_description_processor.create_verifiable_credential(
+            claims=claims)  # type: ignore
+        return self_description, 200
     except Exception as e:
         error_msg = "An error occurred while processing the request [error: {error_details}]".format(
             error_details=e.args)
@@ -219,17 +244,15 @@ def create_vc_from_claims():
         return data, 500
 
 
-@app.route("/sd-from-vcs", methods=["POST"])
-def create_sd_from_vcs():
+@app.route("/vp-from-vcs", methods=["POST"])
+def create_vp_from_vcs():
     try:
-        if (payload := request.get_json()) is not None:
-            vcs: list[dict] = payload
-            for vc in vcs:
-                check_if_id_is_present(vc)
-            self_description = self_description_processor.create_verifiable_presentation(
-                verifiable_credentials=vcs)  # type: ignore
-            return self_description, 200
-        raise Exception("Payload of POST Request is None")
+        vcs: list[dict] = get_json_request_body(request)
+        for vc in vcs:
+            check_if_id_is_present(vc)
+        self_description = self_description_processor.create_verifiable_presentation(
+            verifiable_credentials=vcs)  # type: ignore
+        return self_description, 200
     except Exception as e:
         error_msg = "An error occurred while processing the request [error: {error_details}]".format(
             error_details=e.args)
@@ -260,11 +283,9 @@ def get_id_documents():
         data = {"status": "failed", "error": error_msg}
         return data, 500
 
-def check_if_id_is_present(dictionary_to_check):
-    if "id" not in dictionary_to_check.keys():
-            app.logger.warning("No ID has been specified")
-            return False
-    return True
+
+    
+
 
 
 if __name__ == "__main__":

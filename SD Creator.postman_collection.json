@@ -7,7 +7,7 @@
 	},
 	"item": [
 		{
-			"name": "Add Self Description to GXFS Federated Catalogue",
+			"name": "Add Verifiable Presentation to GXFS Federated Catalogue",
 			"request": {
 				"method": "POST",
 				"header": [],
@@ -21,21 +21,21 @@
 					}
 				},
 				"url": {
-					"raw": "{{sd_creator_protocol}}://{{sd_creator_address}}/federated-catalogue/self-descriptions",
+					"raw": "{{sd_creator_protocol}}://{{sd_creator_address}}/federated-catalogue/upload-from-claims",
 					"protocol": "{{sd_creator_protocol}}",
 					"host": [
 						"{{sd_creator_address}}"
 					],
 					"path": [
 						"federated-catalogue",
-						"self-descriptions"
+						"upload-from-claims"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Create Self Description from Claims",
+			"name": "Create Verifiable Presentation from Claims",
 			"request": {
 				"method": "POST",
 				"header": [],
@@ -49,20 +49,20 @@
 					}
 				},
 				"url": {
-					"raw": "{{sd_creator_protocol}}://{{sd_creator_address}}/self-description",
+					"raw": "{{sd_creator_protocol}}://{{sd_creator_address}}/vp-from-claims",
 					"protocol": "{{sd_creator_protocol}}",
 					"host": [
 						"{{sd_creator_address}}"
 					],
 					"path": [
-						"self-description"
+						"vp-from-claims"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Add Proof to VP without Proof",
+			"name": "Add Proof to Verifiable Presentation without Proof",
 			"request": {
 				"method": "POST",
 				"header": [],
@@ -76,13 +76,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{sd_creator_protocol}}://{{sd_creator_address}}/sd-from-vp-without-proof",
+					"raw": "{{sd_creator_protocol}}://{{sd_creator_address}}/vp-from-vp-without-proof",
 					"protocol": "{{sd_creator_protocol}}",
 					"host": [
 						"{{sd_creator_address}}"
 					],
 					"path": [
-						"sd-from-vp-without-proof"
+						"vp-from-vp-without-proof"
 					]
 				}
 			},
@@ -116,7 +116,7 @@
 			"response": []
 		},
 		{
-			"name": "Create SD from VCs",
+			"name": "Create Verifiable Presentation from Verfiable Credentials",
 			"request": {
 				"method": "POST",
 				"header": [],
@@ -130,20 +130,20 @@
 					}
 				},
 				"url": {
-					"raw": "{{sd_creator_protocol}}://{{sd_creator_address}}/sd-from-vcs",
+					"raw": "{{sd_creator_protocol}}://{{sd_creator_address}}/vp-from-vcs",
 					"protocol": "{{sd_creator_protocol}}",
 					"host": [
 						"{{sd_creator_address}}"
 					],
 					"path": [
-						"sd-from-vcs"
+						"vp-from-vcs"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Get ID_Documents",
+			"name": "Get UUIDs of ID_Documents",
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -161,27 +161,24 @@
 			"response": []
 		},
 		{
-			"name": "Get ID_Document via UUID Copy",
+			"name": "Get ID_Document via UUID",
 			"request": {
-				"method": "POST",
+				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\"uuid\":\"<place_UUID_here>\"}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
 				"url": {
-					"raw": "{{sd_creator_protocol}}://{{sd_creator_address}}/id-documents",
+					"raw": "{{sd_creator_protocol}}://{{sd_creator_address}}/id-documents?uuid=<place_UUID_here>",
 					"protocol": "{{sd_creator_protocol}}",
 					"host": [
 						"{{sd_creator_address}}"
 					],
 					"path": [
 						"id-documents"
+					],
+					"query": [
+						{
+							"key": "uuid",
+							"value": "<place_UUID_here>"
+						}
 					]
 				}
 			},

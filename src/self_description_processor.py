@@ -16,7 +16,6 @@ class SelfDescriptionProcessor:
 
     def __init__(self, credential_issuer: str, signature_jwk: JWK, use_legacy_catalogue_signature: bool, did_store: DIDStore) -> None:
         """
-
         :param credential_issuer:
         :param signature_jwk:
         """
@@ -61,7 +60,7 @@ class SelfDescriptionProcessor:
             did_store_object = self.__did_store.create_did_store_object(
                 credential)
             credential = did_store_object.get_object_content()
-        vc = self._add_proof(credential)
+        vc = self.add_proof(credential)
         return vc
 
     def create_verifiable_presentation(self, verifiable_credentials: list) -> dict:
@@ -82,10 +81,10 @@ class SelfDescriptionProcessor:
             did_store_object = self.__did_store.create_did_store_object(
                 presentation)
             presentation = did_store_object.get_object_content()
-        vp = self._add_proof(presentation)
+        vp = self.add_proof(presentation)
         return vp
 
-    def _add_proof(self, credential: dict) -> dict:
+    def add_proof(self, credential: dict) -> dict:
         """
         Add a Proof to given Credential.
         :param credential: The credential where a Proof will be added to
