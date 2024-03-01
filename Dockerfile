@@ -19,6 +19,7 @@ RUN echo "Adding run user to system" \
 # Copy required resources and set appropriate permissions
 COPY src ${ARG_APP_HOME}
 COPY requirements.txt ${ARG_APP_HOME}/
+COPY openapi-spec.yaml ${ARG_APP_HOME}/
 RUN chown -R ${ARG_RUN_USER}:${ARG_RUN_USER} ${ARG_APP_HOME}
 
 WORKDIR ${ARG_APP_HOME}
