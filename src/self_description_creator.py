@@ -199,8 +199,8 @@ def create_vp_from_vp_without_proof():
 def create_vc_from_claims():
     try:
         claims = get_json_request_body(request)
-        verifiable_presentation = self_description_processor.create_verifiable_credential(claims=claims)
-        return verifiable_presentation, 200
+        verifiable_credential = self_description_processor.create_verifiable_credential(claims=claims)
+        return verifiable_credential, 200
     except Exception as e:
         error_msg = "An error occurred while processing the request [error: {error_details}]".format(
             error_details=e.args)
