@@ -1,13 +1,11 @@
 import logging
 import os
 import time
-import yaml
 from logging.config import dictConfig
 from threading import Thread
 
 from flask import Flask, redirect, Request, request
-from flasgger import Swagger, swag_from
-from flask_restful import Api, Resource
+from flasgger import Swagger
 from jwcrypto import jwk
 from jwcrypto.jwk import JWK
 
