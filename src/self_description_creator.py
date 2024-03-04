@@ -5,7 +5,7 @@ from logging.config import dictConfig
 from threading import Thread
 
 from flask import Flask, redirect, Request, request
-#from flasgger import Swagger
+from flasgger import Swagger
 from jwcrypto import jwk
 from jwcrypto.jwk import JWK
 
@@ -76,7 +76,7 @@ def init_app():
     # openapi_spec=""
     # with open(os.path.join("openapi-spec.yaml"), 'r') as file:
     #     openapi_spec = yaml.safe_load(file)
-    # Swagger(app, template_file='./openapi-spec.yaml', parse=True, merge=True)
+    Swagger(app, template_file=os.path.join("..", './openapi-spec.yaml'), parse=True, merge=True)
     app.logger.info("Initializing app")
 
     # Flask-internal logger has been disabled since it logs every request by default which pollutes the log output
