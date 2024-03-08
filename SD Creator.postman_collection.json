@@ -143,7 +143,34 @@
 			"response": []
 		},
 		{
-			"name": "Get ID_Documents",
+			"name": "Create Verifiable Presentation without Proof from Verfiable Credentials",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "<place_JSON_VC_list_here> (format: [VC1,VC2])",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{sd_creator_protocol}}://{{sd_creator_address}}/vp-without-proof-from-vcs",
+					"protocol": "{{sd_creator_protocol}}",
+					"host": [
+						"{{sd_creator_address}}"
+					],
+					"path": [
+						"vp-without-proof-from-vcs"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get UUIDs of ID_Documents",
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -161,27 +188,24 @@
 			"response": []
 		},
 		{
-			"name": "Get ID_Document via UUID Copy",
+			"name": "Get ID_Document via UUID",
 			"request": {
-				"method": "POST",
+				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\"uuid\":\"<place_UUID_here>\"}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
 				"url": {
-					"raw": "{{sd_creator_protocol}}://{{sd_creator_address}}/id-documents",
+					"raw": "{{sd_creator_protocol}}://{{sd_creator_address}}/id-documents?uuid=<place_UUID_here>",
 					"protocol": "{{sd_creator_protocol}}",
 					"host": [
 						"{{sd_creator_address}}"
 					],
 					"path": [
 						"id-documents"
+					],
+					"query": [
+						{
+							"key": "uuid",
+							"value": "<place_UUID_here>"
+						}
 					]
 				}
 			},

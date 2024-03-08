@@ -53,7 +53,7 @@ class SelfDescriptionProcessor:
         vc = self.add_proof(credential)
         return vc
 
-    def create_verifiable_presentation(self, verifiable_credentials: list) -> dict:
+    def create_verifiable_presentation(self, verifiable_credentials: list, create_proof: bool=True) -> dict:
         """
         Create a W3C Verifiable Presentation (VP). Relevant information can be found in the related Specification
         (see https://www.w3.org/TR/vc-data-model/).
@@ -68,8 +68,10 @@ class SelfDescriptionProcessor:
             "holder": holder,
             "verifiableCredential": verifiable_credentials
         }
-        vp = self.add_proof(presentation)
-        return vp
+        if create_proof:
+            vp = self.add_proof(presentation)
+            return vp
+        return presentation
 
     def add_proof(self, credential: dict) -> dict:
         """
