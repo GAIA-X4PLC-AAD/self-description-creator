@@ -4,3 +4,4 @@ keycloak_client==0.15.4
 PyLD==2.0.3
 Requests==2.31.0
 flasgger==0.9.7b2
+flask_restful==0.3.10
