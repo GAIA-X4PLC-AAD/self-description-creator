@@ -11,10 +11,10 @@ from flasgger import Swagger
 from jwcrypto import jwk
 from jwcrypto.jwk import JWK
 
-from src.claim_file_handler import ClaimFileHandler
-from src.federated_catalogue_client import FederatedCatalogueClient
-from src.self_description_processor import SelfDescriptionProcessor
-from src.did_store import DIDStore
+from claim_file_handler import ClaimFileHandler
+from federated_catalogue_client import FederatedCatalogueClient
+from self_description_processor import SelfDescriptionProcessor
+from did_store import DIDStore
 
 # -- Environment variables --
 KEYCLOAK_SERVER_URL = os.environ.get("KEYCLOAK_SERVER_URL", default="")
