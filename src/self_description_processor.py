@@ -6,7 +6,7 @@ from jwcrypto.common import base64url_encode
 from jwcrypto.jwk import JWK
 from pyld import jsonld
 
-from src.did_store import DIDStore
+from did_store import DIDStore
 
 
 class SelfDescriptionProcessor:
