@@ -143,6 +143,33 @@
 			"response": []
 		},
 		{
+			"name": "Create Verifiable Presentation without Proof from Verfiable Credentials",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "<place_JSON_VC_list_here> (format: [VC1,VC2])",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{sd_creator_protocol}}://{{sd_creator_address}}/vp-without-proof-from-vcs",
+					"protocol": "{{sd_creator_protocol}}",
+					"host": [
+						"{{sd_creator_address}}"
+					],
+					"path": [
+						"vp-without-proof-from-vcs"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Get UUIDs of ID_Documents",
 			"request": {
 				"method": "GET",

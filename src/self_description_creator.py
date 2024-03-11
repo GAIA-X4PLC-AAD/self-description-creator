@@ -257,6 +257,21 @@ def create_vp_from_vcs():
         app.logger.warning(error_msg)
         data = {"status": "failed", "error": error_msg}
         return data, 500
+    
+
+@app.route("/vp-without-proof-from-vcs", methods=["POST"])
+def create_vp_without_proof_from_vcs():
+    try:
+        verifiable_credential_list = get_json_request_body(request)
+        verifiable_presentation = self_description_processor.create_verifiable_presentation(verifiable_credentials=verifiable_credential_list, create_proof=False) 
+        return verifiable_presentation, 200
+    except Exception as e:
+        error_msg = "An error occurred while processing the request [error: {error_details}]".format(
+            error_details=e.args)
+        app.logger.warning(error_msg)
+        data = {"status": "failed", "error": error_msg}
+        return data, 500
+
 
 
 @app.route("/id-documents", methods=["GET"])
