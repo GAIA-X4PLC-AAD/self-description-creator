@@ -75,6 +75,8 @@ container.
 | FEDERATED_CATALOGUE_URL                | String | x        | ""      | The URL of the XFSC Federated Catalogue                                                                              |
 | USE_LEGACY_CATALOGUE_SIGNATURE         | String | x        | False   | Use the legacy XFSC Federated Catalogue signature                                                                    |
 | OPERATING_MODE                         | String | x        | _API_   | Describes the operating mode of the application. Can be either "API" or "HYBRID"                                     |
+| DID_STORAGE_TYPE                       | String | x        | "None"  | local: local did storage shall be used for storing VC/VP IDs; None: No did storage shall be used                     |
+| DID_STORAGE_PATH                       | String | x        | ""      | Specify the path to the did storage folder                                                                           |
 
 ### Operating modes
 
