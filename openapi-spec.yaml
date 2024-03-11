@@ -165,7 +165,7 @@ paths:
             application/json:
               schema:
                 type: object
-        "500": # status code
+        '500': # status code
           description: In case an error occurred.
           content:
             application/json:
