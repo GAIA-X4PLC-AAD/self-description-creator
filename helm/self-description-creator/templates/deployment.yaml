@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "generic-chart.fullname" . }}
+  labels:
+    {{- include "generic-chart.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "generic-chart.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "generic-chart.selectorLabels" . | nindent 8 }}
+        date: "{{ now | unixEpoch }}"
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "generic-chart.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            {{- range .Values.container.main.ports }}
+            - name: {{ .name | quote }}
+              containerPort: {{ .port }}
+              protocol: {{ .protocol | quote }}
+            {{- end }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.container.main.probes.liveness.path }}
+              port: {{ .Values.container.main.probes.liveness.port }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.container.main.probes.readiness.path }}
+              port: {{ .Values.container.main.probes.readiness.port }}
+          env:
+            {{- range $key, $value :=  .Values.container.main.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- range $varName, $value := .Values.secrets }}
+            - name: {{ $varName }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $value.secretName }}
+                  key: {{ $value.secretKey  }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: secret-volume
+              mountPath: /etc/secret-volume
+            {{- if .Values.volume.storageClassName }}
+            - mountPath: {{ .Values.volumeMounts.mountPath }}
+              name: {{ .Values.volumeMounts.name }}
+            {{- end }}
+      volumes:
+        - name: secret-volume
+          secret:
+            secretName: {{ include "generic-chart.fullname" . }}-secret
+        {{- if .Values.volume.storageClassName }}
+        - name: {{ .Values.volume.name }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.volume.claimName }}
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
