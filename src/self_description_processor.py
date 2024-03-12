@@ -6,7 +6,7 @@ from jwcrypto.common import base64url_encode
 from jwcrypto.jwk import JWK
 from pyld import jsonld
 
-from src.did_store import DIDStore
+from did_store import DIDStore
 
 
 class SelfDescriptionProcessor:
@@ -63,7 +63,7 @@ class SelfDescriptionProcessor:
         vc = self.add_proof(credential)
         return vc
 
-    def create_verifiable_presentation(self, verifiable_credentials: list) -> dict:
+    def create_verifiable_presentation(self, verifiable_credentials: list, create_proof: bool=True) -> dict:
         """
         Create a W3C Verifiable Presentation (VP). Relevant information can be found in the related Specification
         (see https://www.w3.org/TR/vc-data-model/).
@@ -81,8 +81,10 @@ class SelfDescriptionProcessor:
             did_store_object = self.__did_store.create_did_store_object(
                 presentation)
             presentation = did_store_object.get_object_content()
-        vp = self.add_proof(presentation)
-        return vp
+        if create_proof:
+            vp = self.add_proof(presentation)
+            return vp
+        return presentation
 
     def add_proof(self, credential: dict) -> dict:
         """
