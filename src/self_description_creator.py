@@ -18,29 +18,21 @@ from src.did_store import DIDStore
 
 # -- Environment variables --
 KEYCLOAK_SERVER_URL = os.environ.get("KEYCLOAK_SERVER_URL", default="")
-FEDERATED_CATALOGUE_USER_NAME = os.environ.get(
-    "FEDERATED_CATALOGUE_USER_NAME", default="")
-FEDERATED_CATALOGUE_USER_PASSWORD = os.environ.get(
-    "FEDERATED_CATALOGUE_USER_PASSWORD", default="")
-USE_LEGACY_CATALOGUE_SIGNATURE = os.environ.get(
-    "USE_LEGACY_CATALOGUE_SIGNATURE", default="").lower() in ("true", "1")
+FEDERATED_CATALOGUE_USER_NAME = os.environ.get("FEDERATED_CATALOGUE_USER_NAME", default="")
+FEDERATED_CATALOGUE_USER_PASSWORD = os.environ.get("FEDERATED_CATALOGUE_USER_PASSWORD", default="")
+USE_LEGACY_CATALOGUE_SIGNATURE = os.environ.get("USE_LEGACY_CATALOGUE_SIGNATURE", default="").lower() in ("true", "1")
 KEYCLOAK_CLIENT_SECRET = os.environ.get("KEYCLOAK_CLIENT_SECRET", default="")
 FEDERATED_CATALOGUE_URL = os.environ.get("FEDERATED_CATALOGUE_URL", default="")
 CREDENTIAL_ISSUER = os.environ.get("CREDENTIAL_ISSUER", default="")
-CREDENTIAL_ISSUER_PRIVATE_KEY_PEM_PATH = os.environ.get(
-    "CREDENTIAL_ISSUER_PRIVATE_KEY_PEM_PATH", default="")
-CLAIM_FILES_DIR = os.environ.get(
-    "CLAIM_FILES_DIR", default=os.path.join("..", "data"))
-CLAIM_FILES_POLL_INTERVAL_SEC = float(os.environ.get(
-    "CLAIM_FILES_POLL_INTERVAL_SEC", default=2.0))
-CLAIM_FILES_CLEANUP_MAX_FILE_AGE_DAYS = os.environ.get(
-    "CLAIM_FILES_CLEANUP_MAX_FILE_AGE_DAYS", default=1)
+CREDENTIAL_ISSUER_PRIVATE_KEY_PEM_PATH = os.environ.get("CREDENTIAL_ISSUER_PRIVATE_KEY_PEM_PATH", default="")
+CLAIM_FILES_DIR = os.environ.get("CLAIM_FILES_DIR", default=os.path.join("..", "data"))
+CLAIM_FILES_POLL_INTERVAL_SEC = float(os.environ.get("CLAIM_FILES_POLL_INTERVAL_SEC", default=2.0))
+CLAIM_FILES_CLEANUP_MAX_FILE_AGE_DAYS = os.environ.get("CLAIM_FILES_CLEANUP_MAX_FILE_AGE_DAYS", default=1)
 DID_STORAGE_TYPE = os.environ.get("DID_STORAGE_TYPE", default="None")
 DID_STORAGE_PATH = os.environ.get("DID_STORAGE_PATH", default="")
 
 # -- Global variables --
-OPERATING_MODE = os.environ.get(
-    "OPERATING_MODE", default="API")  # Can be either API | HYBRID
+OPERATING_MODE = os.environ.get("OPERATING_MODE", default="API")  # Can be either API | HYBRID
 
 # Variable will be initialized in method init_app() on application startup
 signature_jwk: JWK | None = None
@@ -85,11 +77,8 @@ def init_app():
 
     logging.getLogger("werkzeug").addFilter(HealthCheckFilter())
     app = Flask(__name__)
-
-    # openapi_spec=""
-    # with open(os.path.join("openapi-spec.yaml"), 'r') as file:
-    #     openapi_spec = yaml.safe_load(file)
-    Swagger(app, template_file=os.path.join('./openapi-spec.yaml'), parse=True, merge=True)
+    Swagger(app, template_file=os.path.join(
+        './openapi-spec.yaml'), parse=True, merge=True)
     app.logger.info("Initializing app")
 
     # Flask-internal logger has been disabled since it logs every request by default which pollutes the log output
@@ -107,6 +96,7 @@ def init_app():
         app.logger.info("Signing key has been successfully configured")
         app.logger.info("Initialization has been finished")
         return app
+
 
 app = init_app()
 
@@ -137,26 +127,26 @@ def background_task():
         claim_file_handler.cleanup_old_files()
         time.sleep(CLAIM_FILES_POLL_INTERVAL_SEC)
 
+
 def get_json_request_body(request: Request):
     body = request.get_json()
     if body is None:
-        raise Exception("No proper request body found")
+        raise TypeError("No proper request body found")
     else:
         return body
-    
+
+
 def check_if_id_is_present(dictionary_to_check):
     if "id" not in dictionary_to_check.keys():
-            app.logger.warning("No ID has been specified")
-            return False
+        app.logger.warning("No ID has been specified")
+        return False
     return True
-    
 
 
 @app.route("/health")
 def health():
     data = {"status": "success"}
     return data, 200
-
 
 
 # This endpoint is deprecated, use /vp-from-claims instead
@@ -186,6 +176,7 @@ def create_vp_from_claims():
 def post_self_description_to_federated_catalogue():
     return redirect(location="/federated-catalogue/upload-from-claims", code=308)
 
+
 @app.route("/federated-catalogue/upload-from-claims", methods=["POST"])
 def post_claims_to_federated_catalogue():
     try:
@@ -209,7 +200,7 @@ def post_claims_to_federated_catalogue():
         data = {"status": "failed", "error": error_msg}
         return data, 500
 
-    
+
 @app.route("/vp-from-vp-without-proof", methods=["POST"])
 def create_vp_from_vp_without_proof():
     try:
@@ -280,10 +271,6 @@ def get_id_documents():
         app.logger.warning(error_msg)
         data = {"status": "failed", "error": error_msg}
         return data, 500
-
-
-    
-
 
 
 if __name__ == "__main__":

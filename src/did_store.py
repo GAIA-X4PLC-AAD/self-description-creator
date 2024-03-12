@@ -15,7 +15,7 @@ class DIDStore:
         if storage_type in ("local", "cloud"):
             self._storage_type = storage_type
         else:
-            raise Exception("Storage Type for DIDStore is not supported.")
+            raise ValueError("Storage Type for DIDStore is not supported.")
 
     def get_type(self) -> str:
         return self._storage_type
@@ -27,7 +27,7 @@ class DIDStore:
         matches = glob.glob(self.get_path() + '/' + "*" + id + "*")
         if matches:
             return open_file_and_get_file_content(matches[0])
-        raise Exception("UUID has not been found")
+        raise ValueError("UUID has not been found")
 
     def get_saved_uuids(self) -> Iterator[str]:
         for entry in os.scandir(self._storage_path):
@@ -49,7 +49,7 @@ class DIDStore:
                     did_file.write(
                         str(did_store_object_to_save.get_object_content()))
             else:
-                raise Exception(
+                raise ValueError(
                     f"Storage type {self._storage_type} is not implemented yet")
         except Exception as e:
             did_store_object_to_save.set_storage_path(None)
@@ -86,7 +86,7 @@ class DIDStoreObject:
 
     def get_storage_path(self) -> str:
         if self._stored_path is None:
-            raise Exception("No filepath for DIDStoreObject specified")
+            raise ValueError("No filepath for DIDStoreObject specified")
         return self._stored_path
 
 
