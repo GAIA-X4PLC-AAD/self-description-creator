@@ -264,15 +264,9 @@ def create_vp_without_proof_from_vcs():
         return data, 500
 
 
-
 @app.route("/id-documents", methods=["GET"])
-# -> tuple[str, Literal[200]] | tuple[dict[str, str], Literal[...:
 def get_id_documents():
     try:
-        request_uuid = request.args.get("uuid")
-        if request_uuid is not None:
-            did_document = did_store.get_saved_object(request_uuid)
-            return did_document, 200
         data = []
         cnt = 0
         for uuid in did_store.get_saved_uuids():
@@ -280,6 +274,19 @@ def get_id_documents():
                 data.append(uuid)
                 cnt += 1
         return data, 200
+    except Exception as e:
+        error_msg = "An error occurred while processing the request [error: {error_details}]".format(
+            error_details=e.args)
+        app.logger.warning(error_msg)
+        data = {"status": "failed", "error": error_msg}
+        return data, 500
+    
+
+@app.route("/id-documents/<request_uuid>/did.json", methods=["GET"])
+def get_id_document_via_uuid(request_uuid):
+    try:
+        did_document = did_store.get_saved_object(request_uuid)
+        return did_document, 200
     except Exception as e:
         error_msg = "An error occurred while processing the request [error: {error_details}]".format(
             error_details=e.args)
