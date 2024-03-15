@@ -193,18 +193,20 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{sd_creator_protocol}}://{{sd_creator_address}}/id-documents?uuid=<place_UUID_here>",
+					"raw": "{{sd_creator_protocol}}://{{sd_creator_address}}/id-documents/:request_uuid/did.json",
 					"protocol": "{{sd_creator_protocol}}",
 					"host": [
 						"{{sd_creator_address}}"
 					],
 					"path": [
-						"id-documents"
+						"id-documents",
+						":request_uuid",
+						"did.json"
 					],
-					"query": [
+					"variable": [
 						{
-							"key": "uuid",
-							"value": "<place_UUID_here>"
+							"key": "request_uuid",
+							"value": "<UUID>"
 						}
 					]
 				}
@@ -241,6 +243,18 @@
 			"key": "sd_creator_protocol",
 			"value": "http",
 			"type": "default"
+		},
+		{
+			"key": "sd_creator_address",
+			"value": "sd-creator.gxfs.gx4fm.org",
+			"type": "string",
+			"disabled": true
+		},
+		{
+			"key": "sd_creator_protocol",
+			"value": "https",
+			"type": "string",
+			"disabled": true
 		}
 	]
 }

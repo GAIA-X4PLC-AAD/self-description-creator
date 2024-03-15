@@ -379,6 +379,48 @@ paths:
               schema:
                 type: object
 
+  /id-documents:
+    get:
+      summary: Get a list of UUIDs of the stored did documents
+      responses:
+        "200": # status code
+          description: The created List.
+          content:
+            application/json:
+              schema:
+                type: object
+        "500": # status code
+          description: In case an error occurred.
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /id-documents/{request_uuid}/did.json:
+    get:
+      summary: Get DID document by UUID
+      description: Issuer and Private Key used to create the Proof are configured on the server side.
+      parameters:
+        - in: path
+          name: request_uuid
+          required: true
+          description: UUID of the DID document to retrieve
+          schema:
+            type: string
+      responses:
+        "200": # status code
+          description: The created Verifiable Presentation.
+          content:
+            application/json:
+              schema:
+                type: object
+        "500": # status code
+          description: In case an error occurred.
+          content:
+            application/json:
+              schema:
+                type: object
+
 components:
   schemas:
     ServiceOfferingClaims:
