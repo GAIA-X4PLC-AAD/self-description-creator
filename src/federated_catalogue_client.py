@@ -29,7 +29,7 @@ class FederatedCatalogueClient:
                 not keycloak_client_secret:
             err_msg = "Request to Federated Catalogue cannot be performed due to missing environment variables"
             logger.warning(err_msg)
-            raise Exception(err_msg)
+            raise NameError(err_msg)
         self.__federated_catalogue_url = federated_catalogue_url
         self.__keycloak_server_url = keycloak_server_url
         self.__federated_catalogue_user_name = federated_catalogue_user_name
@@ -53,7 +53,7 @@ class FederatedCatalogueClient:
         else:
             error_msg = "An error occurred while sending Self Description to Federated Catalogue " \
                         "[status_code: {}, response_body: {}".format(response.status_code, response.text)
-            raise Exception(error_msg)
+            raise IOError(error_msg)
 
     def _add_federated_catalogue_auth_header(self, header: dict):
         """

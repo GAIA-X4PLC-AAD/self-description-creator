@@ -65,10 +65,14 @@ spec:
           volumeMounts:
             - name: secret-volume
               mountPath: /etc/secret-volume
-            {{- if .Values.volume.storageClassName }}
-            - mountPath: {{ .Values.volumeMounts.mountPath }}
-              name: {{ .Values.volumeMounts.name }}
-            {{- end }}
+          {{- if .Values.volume.storageClassName }}
+            - name: {{ .Values.volume.name }}
+              mountPath: {{ .Values.volume.mountPath }}
+          {{- end }}
+          {{- if .Values.didVolume.storageClassName }}
+            - name: {{ .Values.didVolume.name }}
+              mountPath: {{ .Values.didVolume.mountPath }}
+          {{- end }}
       volumes:
         - name: secret-volume
           secret:
@@ -77,6 +81,11 @@ spec:
         - name: {{ .Values.volume.name }}
           persistentVolumeClaim:
             claimName: {{ .Values.volume.claimName }}
+        {{- end }}
+        {{- if .Values.didVolume.storageClassName }}
+        - name: {{ .Values.didVolume.name }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.didVolume.claimName }}
         {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:

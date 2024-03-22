@@ -67,8 +67,9 @@ serviceAccount:
 
 podAnnotations: {}
 
-podSecurityContext: {}
-  # fsGroup: 2000
+podSecurityContext:
+  fsGroup: 1000
+  fsGroupChangePolicy: "OnRootMismatch"
 
 securityContext: {}
   # capabilities:
@@ -115,9 +116,21 @@ autoscaling:
 
 nodeSelector: {}
 
-tolerations: []
+tolerations:
+  - key: "kubernetes.azure.com/scalesetpriority"
+    operator: "Equal"
+    value: "spot"
+    effect: "NoSchedule"
 
-affinity: {}
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: "kubernetes.azure.com/scalesetpriority"
+              operator: In
+              values:
+                - "spot"
 
 federatedCatalogue: # Keycloak User to access the GXFS Federated Catalogue
   user:
@@ -134,7 +147,12 @@ volume:
   claimName: self-description-creator-file-share
   storageClassName: ""
   storageSize: 1Gi
-
-volumeMounts:
-  name: data
   mountPath: /mnt/data
+
+didVolume:
+  name: diddata
+  claimName: self-description-creator-did-disk
+  storageClassName: ""
+  storageSize: 1Gi
+  mountPath: /mnt/diddata
+

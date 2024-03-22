@@ -11,3 +11,19 @@ spec:
       storage: {{ .Values.volume.storageSize }}
   storageClassName: {{ .Values.volume.storageClassName | quote }}
 {{- end }}
+
+---
+
+{{- if .Values.didVolume.storageClassName -}}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .Values.didVolume.claimName | quote }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.didVolume.storageSize }}
+  storageClassName: {{ .Values.didVolume.storageClassName | quote }}
+{{- end }}
