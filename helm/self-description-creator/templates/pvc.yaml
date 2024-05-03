@@ -21,7 +21,7 @@ metadata:
   name: {{ .Values.didVolume.claimName | quote }}
 spec:
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   resources:
     requests:
       storage: {{ .Values.didVolume.storageSize }}
