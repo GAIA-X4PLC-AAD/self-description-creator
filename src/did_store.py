@@ -3,6 +3,7 @@ from collections.abc import Iterator
 import uuid
 import os
 import glob
+import json
 
 
 class DIDStore:
@@ -15,7 +16,7 @@ class DIDStore:
         if storage_type in ("local", "cloud"):
             self._storage_type = storage_type
         else:
-            raise ValueError("Storage Type for DIDStore is not supported.")
+            raise ValueError(f"Storage Type ({storage_type}) for DIDStore is not supported.")
 
     def get_type(self) -> str:
         return self._storage_type
@@ -46,8 +47,7 @@ class DIDStore:
         try:
             if self._storage_type == "local":
                 with open(did_store_object_to_save.get_storage_path(), "w") as did_file:
-                    did_file.write(
-                        str(did_store_object_to_save.get_object_content()))
+                    json.dump(did_store_object_to_save.get_object_content(), did_file)
             else:
                 raise ValueError(
                     f"Storage type {self._storage_type} is not implemented yet")

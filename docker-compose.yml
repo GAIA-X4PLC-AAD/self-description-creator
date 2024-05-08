@@ -15,8 +15,8 @@ services:
 #      FEDERATED_CATALOGUE_URL: ""
 #      USE_LEGACY_CATALOGUE_SIGNATURE: True
 #      CLAIM_FILES_DIR: "/mnt/data"
-#      DID_STORAGE_TYPE": "local",
-#      DID_STORAGE_PATH": "",
+#      DID_STORAGE_TYPE: "local"
+#      DID_STORAGE_PATH": ""
     volumes:
       - <local_folder_cert_file>/:/mnt/cert/
 #      - <local_folder_claims_files>:/mnt/data/
