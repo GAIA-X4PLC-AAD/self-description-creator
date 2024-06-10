@@ -106,7 +106,7 @@ class SelfDescriptionProcessor:
         proof = {
             "type": "JsonWebSignature2020",
             "created": datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
-            "verificationMethod": self.__credential_issuer,
+            "verificationMethod": self.__credential_issuer+"#JWK2020-RSA",
             "proofPurpose": "assertionMethod",
         }
         # Important info (legacy catalogue): The @context provided in the proof object is required to successfully perform the
