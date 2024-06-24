@@ -56,11 +56,15 @@ class SelfDescriptionProcessor:
             "issuanceDate": issuance_date.isoformat() + "Z",
             "expirationDate": expiration_date.isoformat() + "Z",
             "credentialSubject": claims}
+        did_store_object = None
+        if self.__did_storage_type != "None":
+            did_store_object = self.__did_store.create_transient_did_store_object(
+                credential)
+            credential = did_store_object.get_object_content()
         vc = self.add_proof(credential)
         if self.__did_storage_type != "None":
-            did_store_object = self.__did_store.create_did_store_object(
-                vc)
-            vc = did_store_object.get_object_content()
+            did_store_object.set_object_content(vc)
+            self.__did_store.save_object_into_storage(did_store_object)
         return vc
 
     def create_verifiable_presentation(self, verifiable_credentials: list, create_proof: bool=True) -> dict:
@@ -77,16 +81,18 @@ class SelfDescriptionProcessor:
             "holder": holder,
             "verifiableCredential": verifiable_credentials
         }
+        did_store_object = None
+        if self.__did_storage_type != "None":
+            did_store_object = self.__did_store.create_transient_did_store_object(
+                presentation)
+            presentation = did_store_object.get_object_content()
         if create_proof:
             vp = self.add_proof(presentation)
-        else:
-            vp = presentation
+            presentation = vp
         if self.__did_storage_type != "None":
-            did_store_object = self.__did_store.create_did_store_object(
-                vp)
-            vp = did_store_object.get_object_content()
-
-        return vp
+            did_store_object.set_object_content(presentation)
+            self.__did_store.save_object_into_storage(did_store_object)
+        return presentation
 
     def add_proof(self, credential: dict) -> dict:
         """
