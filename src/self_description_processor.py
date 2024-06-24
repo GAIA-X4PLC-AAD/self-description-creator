@@ -58,7 +58,7 @@ class SelfDescriptionProcessor:
             "credentialSubject": claims}
         did_store_object = None
         if self.__did_storage_type != "None":
-            did_store_object = self.__did_store.create_did_store_object(
+            did_store_object = self.__did_store.create_transient_did_store_object(
                 credential)
             credential = did_store_object.get_object_content()
         vc = self.add_proof(credential)
@@ -83,7 +83,7 @@ class SelfDescriptionProcessor:
         }
         did_store_object = None
         if self.__did_storage_type != "None":
-            did_store_object = self.__did_store.create_did_store_object(
+            did_store_object = self.__did_store.create_transient_did_store_object(
                 presentation)
             presentation = did_store_object.get_object_content()
         if create_proof:

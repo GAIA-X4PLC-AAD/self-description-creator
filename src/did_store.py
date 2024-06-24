@@ -34,7 +34,7 @@ class DIDStore:
         for entry in os.scandir(self._storage_path):
             yield entry.name[:-5]
 
-    def create_did_store_object(self, object_content: dict[str, str]) -> DIDStoreObject:
+    def create_transient_did_store_object(self, object_content: dict[str, str]) -> DIDStoreObject:
         object_uuid = uuid.uuid4().hex
         object_id = "did:web:sd-creator.gxfs.gx4fm.org:id-documents:" + object_uuid
         storage_path = self.determine_storage_path(object_uuid)
