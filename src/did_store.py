@@ -40,7 +40,6 @@ class DIDStore:
         storage_path = self.determine_storage_path(object_uuid)
         did_store_object = DIDStoreObject(
             self, object_uuid, object_id, object_content, storage_path)
-        self.save_object_into_storage(did_store_object)
         return did_store_object
 
     def save_object_into_storage(self, did_store_object_to_save: DIDStoreObject) -> None:
@@ -83,6 +82,9 @@ class DIDStoreObject:
 
     def get_object_content(self) -> dict[str, str]:
         return self._object_content
+
+    def set_object_content(self, new_content: dict[str, str]) -> None:
+        self._object_content = new_content
 
     def get_storage_path(self) -> str:
         if self._stored_path is None:
