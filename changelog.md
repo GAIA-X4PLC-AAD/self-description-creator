@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.6.0] - 2024-06-24
+- Fixed bug where stored document did not match the returned document from the endpoint (missing proof). 
 
 ## [0.5.0] - 2023-12-21
 
