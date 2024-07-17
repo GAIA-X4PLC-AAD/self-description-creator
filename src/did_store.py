@@ -4,7 +4,9 @@ import uuid
 import os
 import glob
 import json
+import logging
 
+logger = logging.getLogger()
 
 class DIDStore:
     """
@@ -52,7 +54,7 @@ class DIDStore:
                     f"Storage type {self._storage_type} is not implemented yet")
         except Exception as e:
             did_store_object_to_save.set_storage_path(None)
-            print("Could not save DIDStoreObject: " + str(e.args))
+            logger.error("Could not save DIDStoreObject: " + str(e.args))
 
     def determine_storage_path(self, uuid: str) -> str:
         return os.path.join(self._storage_path, uuid + ".json")
