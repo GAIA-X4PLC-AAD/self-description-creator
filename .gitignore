@@ -143,3 +143,6 @@ cython_debug/
 secrets/
 .vscode
 did_storage/
+
+# intellij
+.idea/

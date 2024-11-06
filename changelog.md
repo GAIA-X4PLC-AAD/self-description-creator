@@ -17,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.7.0] - 2024-11-06
+### Fixed
+- bumped alpine and all libs in requirements.txt to latest version to fix security issues
+
 ## [0.6.0] - 2024-06-24
 - Fixed bug where stored document did not match the returned document from the endpoint (missing proof). 
 

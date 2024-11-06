@@ -6,18 +6,18 @@ services:
     ports:
       - "8080:8080"
     environment:
-      CREDENTIAL_ISSUER: ""
-      CREDENTIAL_ISSUER_PRIVATE_KEY_PEM_PATH: "/mnt/cert/<pem_file_name>"
+      CREDENTIAL_ISSUER: "did:web:participant.gxfs.gx4fm.org:msg-systems-ag"
+      CREDENTIAL_ISSUER_PRIVATE_KEY_PEM_PATH: "/mnt/cert/pk.pem"
 #      KEYCLOAK_SERVER_URL: ""
 #      KEYCLOAK_CLIENT_SECRET: ""
 #      FEDERATED_CATALOGUE_USER_NAME: ""
 #      FEDERATED_CATALOGUE_USER_PASSWORD: ""
 #      FEDERATED_CATALOGUE_URL: ""
 #      USE_LEGACY_CATALOGUE_SIGNATURE: True
-#      CLAIM_FILES_DIR: "/mnt/data"
-#      DID_STORAGE_TYPE: "local"
-#      DID_STORAGE_PATH": ""
+      CLAIM_FILES_DIR: "/mnt/data"
+      DID_STORAGE_TYPE: "local"
+      DID_STORAGE_PATH": "/mnt/data/"
     volumes:
-      - <local_folder_cert_file>/:/mnt/cert/
-#      - <local_folder_claims_files>:/mnt/data/
+      - ./rsc/:/mnt/cert/
+      - ./rsc_empty:/mnt/data/
 
