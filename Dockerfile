@@ -25,7 +25,8 @@ RUN chown -R ${ARG_RUN_USER}:${ARG_RUN_USER} ${ARG_APP_HOME}
 WORKDIR ${ARG_APP_HOME}
 
 # Install dependencies for web app
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt
 
 # Use user id instead of user name to allow Kubernetes to check for non-root user
 USER 1000

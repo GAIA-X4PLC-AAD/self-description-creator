@@ -8,12 +8,12 @@ services:
     environment:
       CREDENTIAL_ISSUER: ""
       CREDENTIAL_ISSUER_PRIVATE_KEY_PEM_PATH: "/mnt/cert/<pem_file_name>"
+      USE_LEGACY_CATALOGUE_SIGNATURE: "true"
 #      KEYCLOAK_SERVER_URL: ""
 #      KEYCLOAK_CLIENT_SECRET: ""
 #      FEDERATED_CATALOGUE_USER_NAME: ""
 #      FEDERATED_CATALOGUE_USER_PASSWORD: ""
 #      FEDERATED_CATALOGUE_URL: ""
-#      USE_LEGACY_CATALOGUE_SIGNATURE: True
 #      CLAIM_FILES_DIR: "/mnt/data"
 #      DID_STORAGE_TYPE: "local"
 #      DID_STORAGE_PATH": ""
