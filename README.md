@@ -61,22 +61,23 @@ variables that describes the mandatory and optional variables that must be set t
 The following environment variables can be set to adapt the behavior of the application e.g. when running inside a
 container.
 
-| Name                                   | Type   | Optional | Default | Description                                                                                                          |
-|----------------------------------------|--------|----------|---------|----------------------------------------------------------------------------------------------------------------------| 
-| CREDENTIAL_ISSUER                      | String |          |         | The issuer set inside the Self Description. It will not be checked, whether the issuer is valid                      |
-| CREDENTIAL_ISSUER_PRIVATE_KEY_PEM_PATH | String |          |         | Path to the private key (PEM format) of the Issuer certificate that is used to create a Proof for a Self Description |
-| CLAIM_FILES_DIR                        | String | x        | _data_  | Folder where Claim files should be read from                                                                         |
-| CLAIM_FILES_POLL_INTERVAL_SEC          | Float  | x        | _2.0_   | The poll interval used to check the `CLAIM_FILES_DIR` for new files                                                  | 
-| CLAIM_FILES_CLEANUP_MAX_FILE_AGE_DAYS  | Int    | x        | _1_     | The maximum age of processed files in the folder `CLAIM_FILES_DIR` to decide whether they should be cleaned up       |
-| KEYCLOAK_SERVER_URL                    | String | x        | ""      | The URL of the Keycloak Server which is used to retrieve JTWs to access the XFSC Federated Catalogue                 |
-| KEYCLOAK_CLIENT_SECRET                 | String | x        | ""      | The secret for the client `federated_catalogue`                                                                      |
-| FEDERATED_CATALOGUE_USER_NAME          | String | x        | ""      | The Keycloak user which has appropriate permissions to add Self Description to the Federated Catalogue.              |
-| FEDERATED_CATALOGUE_USER_PASSWORD      | String | x        | ""      | Password for the Keycloak user                                                                                       |
-| FEDERATED_CATALOGUE_URL                | String | x        | ""      | The URL of the XFSC Federated Catalogue                                                                              |
-| USE_LEGACY_CATALOGUE_SIGNATURE         | String | x        | False   | Use the legacy XFSC Federated Catalogue signature                                                                    |
-| OPERATING_MODE                         | String | x        | _API_   | Describes the operating mode of the application. Can be either "API" or "HYBRID"                                     |
-| DID_STORAGE_TYPE                       | String | x        | "None"  | local: local did storage shall be used for storing VC/VP IDs; None: No did storage shall be used                     |
-| DID_STORAGE_PATH                       | String | x        | ""      | Specify the path to the did storage folder                                                                           |
+| Name                                   | Type   | Optional | Default                | Description                                                                                                          |
+|----------------------------------------|--------|----------|------------------------|----------------------------------------------------------------------------------------------------------------------| 
+| CREDENTIAL_ISSUER                      | String |          |                        | The issuer set inside the Self Description. It will not be checked, whether the issuer is valid                      |
+| VP_VC_ID_PREFIX                        | String | x        | https://localhost:8080 | The prefix if the created VP or VC id to be set (should be a DID pattern)                                            |
+| CREDENTIAL_ISSUER_PRIVATE_KEY_PEM_PATH | String |          |                        | Path to the private key (PEM format) of the Issuer certificate that is used to create a Proof for a Self Description |
+| CLAIM_FILES_DIR                        | String | x        | _data_                 | Folder where Claim files should be read from                                                                         |
+| CLAIM_FILES_POLL_INTERVAL_SEC          | Float  | x        | _2.0_                  | The poll interval used to check the `CLAIM_FILES_DIR` for new files                                                  | 
+| CLAIM_FILES_CLEANUP_MAX_FILE_AGE_DAYS  | Int    | x        | _1_                    | The maximum age of processed files in the folder `CLAIM_FILES_DIR` to decide whether they should be cleaned up       |
+| KEYCLOAK_SERVER_URL                    | String | x        | ""                     | The URL of the Keycloak Server which is used to retrieve JTWs to access the XFSC Federated Catalogue                 |
+| KEYCLOAK_CLIENT_SECRET                 | String | x        | ""                     | The secret for the client `federated_catalogue`                                                                      |
+| FEDERATED_CATALOGUE_USER_NAME          | String | x        | ""                     | The Keycloak user which has appropriate permissions to add Self Description to the Federated Catalogue.              |
+| FEDERATED_CATALOGUE_USER_PASSWORD      | String | x        | ""                     | Password for the Keycloak user                                                                                       |
+| FEDERATED_CATALOGUE_URL                | String | x        | ""                     | The URL of the XFSC Federated Catalogue                                                                              |
+| USE_LEGACY_CATALOGUE_SIGNATURE         | String | x        | False                  | Use the legacy XFSC Federated Catalogue signature                                                                    |
+| OPERATING_MODE                         | String | x        | _API_                  | Describes the operating mode of the application. Can be either "API" or "HYBRID"                                     |
+| DID_STORAGE_TYPE                       | String | x        | "None"                 | local: local did storage shall be used for storing VC/VP IDs; None: No did storage shall be used                     |
+| DID_STORAGE_PATH                       | String | x        | ""                     | Specify the path to the did storage folder                                                                           |
 
 ### Operating modes
 

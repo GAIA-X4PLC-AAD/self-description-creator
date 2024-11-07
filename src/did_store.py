@@ -1,5 +1,6 @@
 from __future__ import annotations  # used for linting (type annotations)
 from collections.abc import Iterator
+from self_description_creator import VP_VC_ID_PREFIX
 import uuid
 import os
 import glob
@@ -38,7 +39,10 @@ class DIDStore:
 
     def create_transient_did_store_object(self, object_content: dict[str, str]) -> DIDStoreObject:
         object_uuid = uuid.uuid4().hex
-        object_id = "did:web:sd-creator.gxfs.gx4fm.org:id-documents:" + object_uuid
+        if VP_VC_ID_PREFIX.startswith("http://") or VP_VC_ID_PREFIX.startswith("https://"):
+            object_id = f"{VP_VC_ID_PREFIX}/id-documents/{object_uuid}.json"
+        else:
+            object_id = f"{VP_VC_ID_PREFIX}:id-documents:{object_uuid}"
         storage_path = self.determine_storage_path(object_uuid)
         did_store_object = DIDStoreObject(
             self, object_uuid, object_id, object_content, storage_path)

@@ -17,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.8.0] - 2024-11-07
+### Added
+- Add the possibility to configure the ID of VP and VC with the optional parameter `VP_VC_ID_PREFIX` in the environment variables.
+
 ## [0.7.0] - 2024-11-06
 ### Fixed
 - bumped alpine and all libs in requirements.txt to latest version to fix security issues
