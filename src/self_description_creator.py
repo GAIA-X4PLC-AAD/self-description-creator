@@ -34,6 +34,7 @@ DID_STORAGE_PATH = os.environ.get("DID_STORAGE_PATH", default="")
 
 # -- Global variables --
 OPERATING_MODE = os.environ.get("OPERATING_MODE", default="API")  # Can be either API | HYBRID
+ERROR_MESSAGE_TEMPLATE = "An error occurred while processing the request [error: {error_details}]"
 
 # Variable will be initialized in method init_app() on application startup
 signature_jwk: JWK | None = None
@@ -165,8 +166,7 @@ def create_vp_from_claims():
             claims=claims)  # type: ignore
         return verifiable_presentation, 200
     except Exception as e:
-        error_msg = "An error occurred while processing the request [error: {error_details}]".format(
-            error_details=e.args)
+        error_msg = ERROR_MESSAGE_TEMPLATE.format(error_details=e.args)
         app.logger.warning(error_msg)
         data = {"status": "failed", "error": error_msg}
         return data, 500
@@ -195,8 +195,7 @@ def post_claims_to_federated_catalogue():
         data = {"status": "success"}
         return data, 201
     except Exception as e:
-        error_msg = "An error occurred while processing the request [error: {body}]".format(
-            body=e.args)
+        error_msg = ERROR_MESSAGE_TEMPLATE.format(error_details=e.args)
         app.logger.warning(error_msg)
         data = {"status": "failed", "error": error_msg}
         return data, 500
@@ -211,8 +210,7 @@ def create_vp_from_vp_without_proof():
             credential=vp_without_proof)  # type: ignore
         return self_description, 200
     except Exception as e:
-        error_msg = "An error occurred while processing the request [error: {error_details}]".format(
-            error_details=e.args)
+        error_msg = ERROR_MESSAGE_TEMPLATE.format(error_details=e.args)
         app.logger.warning(error_msg)
         data = {"status": "failed", "error": error_msg}
         return data, 500
@@ -227,8 +225,7 @@ def create_vc_from_claims():
             claims=claims)  # type: ignore
         return self_description, 200
     except Exception as e:
-        error_msg = "An error occurred while processing the request [error: {error_details}]".format(
-            error_details=e.args)
+        error_msg = ERROR_MESSAGE_TEMPLATE.format(error_details=e.args)
         app.logger.warning(error_msg)
         data = {"status": "failed", "error": error_msg}
         return data, 500
@@ -244,8 +241,7 @@ def create_vp_from_vcs():
             verifiable_credentials=vcs)  # type: ignore
         return self_description, 200
     except Exception as e:
-        error_msg = "An error occurred while processing the request [error: {error_details}]".format(
-            error_details=e.args)
+        error_msg = ERROR_MESSAGE_TEMPLATE.format(error_details=e.args)
         app.logger.warning(error_msg)
         data = {"status": "failed", "error": error_msg}
         return data, 500
@@ -258,8 +254,7 @@ def create_vp_without_proof_from_vcs():
         verifiable_presentation = self_description_processor.create_verifiable_presentation(verifiable_credentials=verifiable_credential_list, create_proof=False) 
         return verifiable_presentation, 200
     except Exception as e:
-        error_msg = "An error occurred while processing the request [error: {error_details}]".format(
-            error_details=e.args)
+        error_msg = ERROR_MESSAGE_TEMPLATE.format(error_details=e.args)
         app.logger.warning(error_msg)
         data = {"status": "failed", "error": error_msg}
         return data, 500
@@ -276,8 +271,7 @@ def get_id_documents():
                 cnt += 1
         return data, 200
     except Exception as e:
-        error_msg = "An error occurred while processing the request [error: {error_details}]".format(
-            error_details=e.args)
+        error_msg = ERROR_MESSAGE_TEMPLATE.format(error_details=e.args)
         app.logger.warning(error_msg)
         data = {"status": "failed", "error": error_msg}
         return data, 500
@@ -289,8 +283,7 @@ def get_id_document_via_uuid(request_uuid):
         did_document = did_store.get_saved_object(request_uuid)
         return did_document, 200
     except Exception as e:
-        error_msg = "An error occurred while processing the request [error: {error_details}]".format(
-            error_details=e.args)
+        error_msg = ERROR_MESSAGE_TEMPLATE.format(error_details=e.args)
         app.logger.warning(error_msg)
         data = {"status": "failed", "error": error_msg}
         return data, 500
