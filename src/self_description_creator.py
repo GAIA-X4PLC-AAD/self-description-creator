@@ -103,7 +103,8 @@ def init_app():
 app = init_app()
 
 did_store = DIDStore(storage_path=DID_STORAGE_PATH,
-                     storage_type=DID_STORAGE_TYPE)
+                     storage_type=DID_STORAGE_TYPE,
+                     vp_vc_id_prefix=VP_VC_ID_PREFIX)
 self_description_processor = SelfDescriptionProcessor(credential_issuer=CREDENTIAL_ISSUER,
                                                       signature_jwk=signature_jwk, # type: ignore needed for linting, type error would indicate that signature_jwk could ne None, but in init_app() we check, if signature_jwk is None.
                                                       use_legacy_catalogue_signature=USE_LEGACY_CATALOGUE_SIGNATURE,

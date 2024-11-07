@@ -1,6 +1,5 @@
 from __future__ import annotations  # used for linting (type annotations)
 from collections.abc import Iterator
-from self_description_creator import VP_VC_ID_PREFIX
 import uuid
 import os
 import glob
@@ -14,12 +13,13 @@ class DIDStore:
     Class can be used to create a local did store and create did documents and did:web IDs.
     """
 
-    def __init__(self, storage_type: str, storage_path: str) -> None:
+    def __init__(self, storage_type: str, storage_path: str, vp_vc_id_prefix) -> None:
         self._storage_path = storage_path
         if storage_type in ("local", "cloud"):
             self._storage_type = storage_type
         else:
             raise ValueError(f"Storage Type ({storage_type}) for DIDStore is not supported.")
+        self._vp_vc_id_prefix = vp_vc_id_prefix
 
     def get_type(self) -> str:
         return self._storage_type
@@ -39,10 +39,10 @@ class DIDStore:
 
     def create_transient_did_store_object(self, object_content: dict[str, str]) -> DIDStoreObject:
         object_uuid = uuid.uuid4().hex
-        if VP_VC_ID_PREFIX.startswith("http://") or VP_VC_ID_PREFIX.startswith("https://"):
-            object_id = f"{VP_VC_ID_PREFIX}/id-documents/{object_uuid}.json"
+        if self._vp_vc_id_prefix.startswith("http://") or self._vp_vc_id_prefix.startswith("https://"):
+            object_id = f"{self._vp_vc_id_prefix}/id-documents/{object_uuid}.json"
         else:
-            object_id = f"{VP_VC_ID_PREFIX}:id-documents:{object_uuid}"
+            object_id = f"{self._vp_vc_id_prefix}:id-documents:{object_uuid}"
         storage_path = self.determine_storage_path(object_uuid)
         did_store_object = DIDStoreObject(
             self, object_uuid, object_id, object_content, storage_path)
